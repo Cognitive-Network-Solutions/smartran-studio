@@ -1,0 +1,321 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Theme colors using Tailwind's theme() function */
+@layer components {
+  /* Light theme (default) */
+  :root {
+    --color-viewport-bg: theme('colors.light.viewport-bg');
+    --color-bg: theme('colors.light.bg');
+    --color-surface: theme('colors.light.surface');
+    --color-surface-elevated: theme('colors.light.bg-secondary');
+    --color-bg-secondary: theme('colors.light.bg-secondary');
+    --color-topbar-bg: theme('colors.light.topbar-bg');
+    --color-topbar-ink: theme('colors.light.topbar-ink');
+    --color-sidebar: theme('colors.light.sidebar');
+    --color-sidebar-ink: theme('colors.light.sidebar-ink');
+    --color-ink: theme('colors.light.ink');
+    --color-text: theme('colors.light.text');
+    --color-muted: theme('colors.light.muted');
+    --color-line: theme('colors.light.line');
+    --color-border-light: theme('colors.light.border-light');
+    
+    /* Semantic colors */
+    --color-accent: theme('colors.accent');
+    --color-success: theme('colors.success');
+    --color-warning: theme('colors.warning');
+    --color-error: theme('colors.error');
+    --color-info: theme('colors.info');
+  }
+
+  /* Dark theme */
+  [data-theme="dark"] {
+    --color-viewport-bg: theme('colors.dark.viewport-bg');
+    --color-bg: theme('colors.dark.bg');
+    --color-surface: theme('colors.dark.surface');
+    --color-surface-elevated: theme('colors.dark.bg-secondary');
+    --color-bg-secondary: theme('colors.dark.bg-secondary');
+    --color-topbar-bg: theme('colors.dark.topbar-bg');
+    --color-topbar-ink: theme('colors.dark.topbar-ink');
+    --color-sidebar: theme('colors.dark.sidebar');
+    --color-sidebar-ink: theme('colors.dark.sidebar-ink');
+    --color-ink: theme('colors.dark.ink');
+    --color-text: theme('colors.dark.text');
+    --color-muted: theme('colors.dark.muted');
+    --color-line: theme('colors.dark.line');
+    --color-border-light: theme('colors.dark.border-light');
+    
+    /* Semantic colors (same for both themes) */
+    --color-accent: theme('colors.accent');
+    --color-success: theme('colors.success');
+    --color-warning: theme('colors.warning');
+    --color-error: theme('colors.error');
+    --color-info: theme('colors.info');
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--color-sidebar-ink);
+  }
+}
+
+/* SVG sector interactivity for Network Map */
+svg .sector {
+  pointer-events: all;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
+  cursor: pointer;
+}
+
+svg .sector:hover {
+  opacity: 0.9 !important;
+  stroke-width: 2.5 !important;
+}
+
+/* CLI Output Styling */
+.cli-output {
+  line-height: 1.6;
+}
+
+/* CLI Tables - Modern, Clean Design */
+.cli-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.cli-table thead {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+  position: relative;
+}
+
+.cli-table thead::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .cli-table thead::after {
+  background: #0f172a;
+}
+
+.cli-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.cli-table th:last-child {
+  border-right: none;
+}
+
+.cli-table tbody {
+  background: var(--color-surface);
+}
+
+.cli-table td {
+  padding: 0.875rem 1.5rem;
+  border-right: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition: background-color 0.15s ease;
+}
+
+.cli-table td:first-child {
+  font-weight: 600;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+}
+
+.cli-table td:last-child {
+  border-right: none;
+}
+
+.cli-table tbody tr:first-child td {
+  padding-top: 1rem;
+}
+
+.cli-table tbody tr:last-child td {
+  border-bottom: none;
+  padding-bottom: 1rem;
+}
+
+/* Alternating row colors - subtle */
+.cli-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+[data-theme="dark"] .cli-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* Hover state - must come after alternating rows */
+.cli-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.08) !important;
+}
+
+[data-theme="dark"] .cli-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.12) !important;
+}
+
+/* CLI Error Messages */
+.cli-error {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-left: 4px solid theme('colors.error');
+  background: rgba(220, 38, 38, 0.1);
+  border-radius: 4px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+.cli-error .error-icon {
+  margin-right: 0.5rem;
+}
+
+/* CLI Success Messages */
+.cli-success {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-left: 4px solid theme('colors.success');
+  background: rgba(22, 163, 74, 0.1);
+  border-radius: 4px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+.cli-success .success-icon {
+  margin-right: 0.5rem;
+}
+
+/* CLI Info Messages */
+.cli-info {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-left: 4px solid theme('colors.info');
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 4px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+/* CLI Warning Messages */
+.cli-warning {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-left: 4px solid theme('colors.warning');
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+/* CLI Loading */
+.loading {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+/* Interactive Widget / Wizard */
+.cli-interactive {
+  display: block;
+  padding: 0;
+  margin: 1rem 0;
+  background: var(--surface-elevated);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Courier New', 'Consolas', monospace;
+  color: var(--text-primary);
+  white-space: pre;
+  overflow-x: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cli-interactive pre {
+  margin: 0;
+  padding: 1rem;
+}
+
+[data-theme="dark"] .cli-interactive {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+/* Wizard active indicator */
+.wizard-active-indicator {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(6, 182, 212, 0.2);
+  border-left: 3px solid theme('colors.info');
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.wizard-active-indicator .icon {
+  margin-right: 0.5rem;
+}

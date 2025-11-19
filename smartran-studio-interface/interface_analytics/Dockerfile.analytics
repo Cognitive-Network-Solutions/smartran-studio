@@ -1,0 +1,29 @@
+# Combined RAPIDS + PyTorch Geometric Dockerfile
+# Installing PyTorch then PyTorch Geometric on RAPIDS base
+FROM rapidsai/notebooks:25.06-cuda12.8-py3.11
+
+# Set non-interactive mode for apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy your development dependencies
+COPY requirements.txt /workspace/requirements.txt
+
+# Check what conda environments are available
+RUN conda info --envs
+
+# Install PyTorch first, then PyTorch Geometric with performance extensions
+RUN pip install --upgrade pip && \
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 && \
+    pip install torch_geometric && \
+    pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.6.0+cu124.html && \
+    pip install --no-cache-dir -r requirements.txt
+
+
+# Expose FastAPI port
+EXPOSE 8002
+
+# Run the FastAPI app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]

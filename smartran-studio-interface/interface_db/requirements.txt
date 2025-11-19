@@ -1,0 +1,7 @@
+# ArangoDB Python Driver
+python-arango==7.8.0
+
+# Optional: For data manipulation
+pandas==2.1.4
+numpy==1.26.2
+

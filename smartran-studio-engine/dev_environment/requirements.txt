@@ -1,0 +1,12 @@
+# base require,ents 
+pandas
+scipy
+jupyter
+notebook
+pyarrow
+duckdb
+google-cloud-storage
+
+
+
+

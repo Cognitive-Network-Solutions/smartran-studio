@@ -1,0 +1,29 @@
+# Backend Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend modules
+COPY backend.py .
+COPY config.py .
+COPY session.py .
+COPY models.py .
+COPY api_client.py .
+COPY arango_client.py .
+COPY commands/ ./commands/
+COPY framework/ ./framework/
+# Copy runtime configuration
+COPY config.yaml .
+
+# Expose port 8001 for the FastAPI application
+EXPOSE 8001
+
+# Run the backend server
+CMD ["python", "backend.py"]
+
+
+

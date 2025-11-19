@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  rapids-notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile.sionna
+      
+      args:
+        GRAPHRAN_TOKEN: ${GRAPHRAN_TOKEN}
+        GRAPHRAN_PROJECT_ID: ${GRAPHRAN_PROJECT_ID}
+    container_name: rapids-dev-env
+    
+    # GPU access configuration
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    # Port mappings
+    ports:
+      - "8888:8888"  # Jupyter Lab
+      - "8787:8787"  # Dask dashboard
+      - "8786:8786"  # Dask scheduler
+    
+    # Volume mounts
+    volumes:
+      - ../:/workspace                           # Mount parent directory
+      - $HOME/.config/gcloud:/root/.config/gcloud:ro # Mount GCP credentials for Google Cloud Storage
+    
+
+    user: root
+    # Environment variables
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - RAPIDS_NO_INITIALIZE=1
+      - CUDF_SPILL=0
+      - JUPYTER_ENABLE_LAB=yes
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json # Mount GCP credentials for Google Cloud Storage
+    
+    # Working directory
+    working_dir: /workspace
+    
+    # Keep container running
+    tty: true
+    stdin_open: true
+    
+    # Network mode for dashboard access
+    network_mode: bridge 

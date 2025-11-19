@@ -1,0 +1,79 @@
+services:
+  # ArangoDB Service - State Persistence
+  cns-arangodb:
+    image: arangodb:3.11
+    container_name: smartran-studio-arangodb
+    ports:
+      - "8529:8529"  # Web UI and HTTP API
+    volumes:
+      - arango_data:/var/lib/arangodb3
+      - arango_apps:/var/lib/arangodb3-apps
+    environment:
+      # ArangoDB Configuration
+      - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password  # Change for production!
+      - ARANGO_NO_AUTH=0  # Set to 1 to disable auth for testing
+    networks:
+      - cns-network
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  # Backend FastAPI Service - CLI Command Handler
+  backend:
+    build:
+      context: ./interface_backend
+      dockerfile: Dockerfile.backend
+    container_name: smartran-studio-backend
+    ports:
+      - "8001:8001"  # Expose backend on port 8001
+    environment:
+      # API Routes (injected as env vars)
+      - SIONNA_API_URL=http://smartran-studio-engine:8000
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529
+      - ARANGO_USERNAME=root
+      - ARANGO_PASSWORD=smartran-studio_dev_password
+      - ARANGO_DATABASE=smartran-studio_db
+    networks:
+      - smartran-studio-network
+    depends_on:
+      - smartran-studio-arangodb
+    restart: unless-stopped
+    volumes:
+      # Mount backend for live editing
+      - ./interface_backend/backend.py:/app/backend.py
+      - ./interface_backend/config.yaml:/app/config.yaml
+    command: ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Frontend Nginx Service - Web UI (React + Vite)
+  frontend:
+    build:
+      context: ./interface_frontend
+      dockerfile: Dockerfile.frontend
+    container_name: smartran-studio-frontend
+    ports:
+      - "8080:80"  # Access frontend at http://localhost:8080
+    networks:
+      - smartran-studio-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    # No volumes needed - React build is self-contained in the image
+
+# Volumes for data persistence
+volumes:
+  arango_data:
+    name: cns_arango_data
+  arango_apps:
+    name: cns_arango_apps
+
+# Networks
+networks:
+  smartran-studio-network:
+    external: true  # Join existing network created by Sionna
+    name: smartran-studio-network

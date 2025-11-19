@@ -1,0 +1,42 @@
+# CNS CLI Backend Configuration
+# Configuration for network connections and API endpoints
+
+networks:
+  sim:
+    name: "CNS Sionna Simulation"
+    type: "simulation"
+    description: "Sionna-based RF simulation environment"
+    
+    # ============================================================
+    # INTERNAL DOCKER NETWORK (Recommended - fastest)
+    # Use when both backend and Sionna are on cns-network
+    api_url: "http://cns-sionna-sim:8000"
+    # ============================================================
+    
+    # OTHER OPTIONS (uncomment if needed):
+    # For Docker host network access:
+    # api_url: "http://host.docker.internal:8000"
+    # 
+    # For local development (backend outside Docker):
+    # api_url: "http://localhost:8000"
+    
+    enabled: true
+    
+  # Future network sources can be added here:
+  # prod:
+  #   name: "Production Network"
+  #   type: "live"
+  #   api_url: "https://api.cns.network"
+  #   auth_required: true
+  #   enabled: false
+
+# Default network to connect to on startup
+default_network: "sim"
+
+# CLI settings
+cli:
+  max_history: 100
+  command_timeout_seconds: 300
+  pretty_print: true
+  color_output: true
+

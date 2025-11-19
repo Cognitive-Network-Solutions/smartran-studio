@@ -1,0 +1,20 @@
+# Ignore version control directories and files
+.git/
+.gitignore
+
+# Ignore build directories
+dist/
+build/
+target/
+
+# Ignore Docker-related files if not needed in the image
+Dockerfile
+docker-compose.yml
+compose.yml
+
+
+# Ignore the node modules
+node_modules
+.env
+.DS_Store
+.git

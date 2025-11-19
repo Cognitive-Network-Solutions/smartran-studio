@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  cns-sionna-sim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
+      args:
+        GRAPHRAN_TOKEN: ${GRAPHRAN_TOKEN}
+        GRAPHRAN_PROJECT_ID: ${GRAPHRAN_PROJECT_ID}
+    container_name: cns-sionna-sim
+    
+    # GPU access configuration
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    # Port mappings
+    ports:
+      - "8000:8000"  # FastAPI
+    
+    # Volume mounts
+    volumes:
+      - .:/workspace                           # Mount current directory (not parent)
+      - $HOME/.config/gcloud:/root/.config/gcloud:ro # Mount GCP credentials for Google Cloud Storage
+    
+
+    user: root
+    # Environment variables
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - RAPIDS_NO_INITIALIZE=1
+      - CUDF_SPILL=0
+      - JUPYTER_ENABLE_LAB=yes
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json # Mount GCP credentials for Google Cloud Storage
+      - ARANGO_HOST=http://cns-arangodb:8529
+      - ARANGO_USERNAME=root
+      - ARANGO_PASSWORD=cns_dev_password
+      - ARANGO_DATABASE=cns_sim
+    
+    # Working directory
+    working_dir: /workspace
+    
+    # Keep container running
+    tty: true
+    stdin_open: true
+    
+    # Networks - connect to cns-network for internal communication
+    networks:
+      - cns-network
+
+# Define networks
+networks:
+  cns-network:
+    driver: bridge  # Create the network (Sionna is primary service)
+    name: cns-network

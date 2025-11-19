@@ -1,0 +1,11 @@
+pandas
+scipy
+jupyter
+notebook
+pyarrow
+duckdb
+google-cloud-storage
+fastapi
+uvicorn
+python-arango==7.8.0
+
