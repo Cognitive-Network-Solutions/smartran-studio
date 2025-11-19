@@ -21,7 +21,7 @@ class CellUpdateRequest(BaseModel):
     
     # Cell identifier (one required)
     cell_id: Optional[int] = Field(None, ge=0, description="Cell ID (index)")
-    cell_name: Optional[str] = Field(None, description="Cell name (e.g., 'HCNS0001A1')")
+    cell_name: Optional[str] = Field(None, description="Cell name (e.g., 'HSITE0001A1')")
     
     # NOTE: Identifier fields (site, sector_id, band, site_idx, etc.) are IMMUTABLE
     # and cannot be updated after cell creation
@@ -81,7 +81,7 @@ class CellUpdateRequest(BaseModel):
                     "tilt_deg": 12.0
                 },
                 {
-                    "cell_name": "HCNS0001A1",
+                    "cell_name": "HSITE0001A1",
                     "tilt_deg": 12.0,
                     "tx_rs_power_dbm": 5.0
                 },
@@ -372,11 +372,11 @@ class QueryBasedUpdateRequest(BaseModel):
         schema_extra = {
             "examples": [
                 {
-                    "site_name": "CNS0001A",
+                    "site_name": "SITE0001A",
                     "update_tilt_deg": 12.0
                 },
                 {
-                    "site_name": "CNS000*",
+                    "site_name": "SITE000*",
                     "band": "H",
                     "update_tilt_deg": 11.0,
                     "update_tx_rs_power_dbm": 5.0

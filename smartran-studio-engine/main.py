@@ -593,8 +593,8 @@ async def update_cell_tilts(request: CellTiltUpdates):
     
     Examples:
         By cell_id: {"updates": [{"cell_id": 0, "tilt_deg": 8.0}]}
-        By cell_name: {"updates": [{"cell_name": "HCNS0001A1", "tilt_deg": 8.0}]}
-        Mixed: {"updates": [{"cell_id": 0, "tilt_deg": 8.0}, {"cell_name": "LCNS0005A2", "tilt_deg": 4.5}]}
+        By cell_name: {"updates": [{"cell_name": "HSITE0001A1", "tilt_deg": 8.0}]}
+        Mixed: {"updates": [{"cell_id": 0, "tilt_deg": 8.0}, {"cell_name": "LSITE0005A2", "tilt_deg": 4.5}]}
     
     Returns:
         Summary of updates applied
@@ -688,7 +688,7 @@ async def update_cell_endpoint(request: CellUpdateRequest):
     
     2. Update multiple RF params:
        POST /update-cell
-       {"cell_name": "HCNS0001A1", "tilt_deg": 12.0, "tx_rs_power_dbm": 5.0}
+       {"cell_name": "HSITE0001A1", "tilt_deg": 12.0, "tx_rs_power_dbm": 5.0}
     
     3. Change antenna array:
        POST /update-cell
@@ -735,7 +735,7 @@ async def update_cells_bulk_endpoint(request: BulkCellUpdateRequest):
       "updates": [
         {"cell_id": 0, "tilt_deg": 12.0},
         {"cell_id": 1, "tilt_deg": 12.0},
-        {"cell_name": "HCNS0003A1", "tilt_deg": 10.0}
+        {"cell_name": "HSITE0003A1", "tilt_deg": 10.0}
       ],
       "stop_on_error": false
     }
@@ -776,14 +776,14 @@ async def update_cells_by_query_endpoint(request: QueryBasedUpdateRequest):
     1. Update all cells from a site:
        POST /update-cells-by-query
        {
-         "site_name": "CNS0001A",
+         "site_name": "SITE0001A",
          "update_tilt_deg": 12.0
        }
     
-    2. Wildcard update - all sites starting with CNS000, high band only:
+    2. Wildcard update - all sites starting with SITE000, high band only:
        POST /update-cells-by-query
        {
-         "site_name": "CNS000*",
+         "site_name": "SITE000*",
          "band": "H",
          "update_tilt_deg": 11.0,
          "update_tx_rs_power_dbm": 5.0
@@ -950,9 +950,9 @@ async def query_cells_endpoint(query: CellQuery):
        POST /query-cells
        {"band": "H"}
     
-    2. Cells from sites starting with CNS000:
+    2. Cells from sites starting with SITE000:
        POST /query-cells
-       {"site_name": "CNS000*"}
+       {"site_name": "SITE000*"}
     
     3. Cells with 8x1 arrays in high band:
        POST /query-cells
@@ -983,7 +983,7 @@ async def add_site_endpoint(request: AddSiteRequest):
     """
     Add a new site with configurable cells to the existing simulation.
     
-    Enforces naming convention: CNS{site_number:04d}A
+    Enforces naming convention: SITE{site_number:04d}A
     - site_number is auto-calculated as next available number
     - Can add with 0 cells, or specify cells to create
     
@@ -996,7 +996,7 @@ async def add_site_endpoint(request: AddSiteRequest):
     
     Returns:
         site_idx: Internal site index
-        site_name: Generated site name (e.g., CNS0001A)
+        site_name: Generated site name (e.g., SITE0001A)
         site_number: Site number (e.g., 1)
         cells_added: List of cells created
     
@@ -1024,13 +1024,13 @@ async def add_site_endpoint(request: AddSiteRequest):
             # Calculate next site number from existing sites
             max_site_num = 0
             for site in sim.sites:
-                # Parse existing site names like CNS0001A -> 0001
-                match = re.match(r'CNS(\d{4})A', site['name'])
+                # Parse existing site names like SITE0001A -> 0001
+                match = re.match(r'SITE(\d{4})A', site['name'])
                 if match:
                     max_site_num = max(max_site_num, int(match.group(1)))
             
             next_site_num = max_site_num + 1
-            site_name = f"CNS{next_site_num:04d}A"
+            site_name = f"SITE{next_site_num:04d}A"
             
             # Add the site
             site_idx = sim.add_site(
@@ -1104,7 +1104,7 @@ async def add_cell_endpoint(request: AddCellRequest):
     5. Subsequent cells on same sector inherit the sector's azimuth
     
     Args:
-        site_name: Existing site name (e.g., "CNS0001A")
+        site_name: Existing site name (e.g., "SITE0001A")
         sector_id: 0, 1, or 2
         band: Band identifier (e.g., "H", "L", "M")
         fc_hz: Frequency in Hz
@@ -1126,7 +1126,7 @@ async def add_cell_endpoint(request: AddCellRequest):
     Example:
         POST /add-cell
         {
-            "site_name": "CNS0001A",
+            "site_name": "SITE0001A",
             "sector_id": 0,
             "band": "H",
             "fc_hz": 2500000000,

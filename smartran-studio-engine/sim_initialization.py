@@ -128,7 +128,7 @@ def initialize_simulation(config: SimInitializationRequest) -> dict:
         ),
         start=1
     ):
-        site_name = f"CNS{idx:04d}A"
+        site_name = f"SITE{idx:04d}A"
         
         add_site_with_dualband_cells(
             sim,

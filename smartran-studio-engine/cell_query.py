@@ -63,7 +63,7 @@ class CellQuery(BaseModel):
                     "tilt_min": 10
                 },
                 {
-                    "site_name": "CNS000*",
+                    "site_name": "SITE000*",
                     "sector_id": 0
                 },
                 {
@@ -88,10 +88,10 @@ def matches_pattern(value: str, pattern: str) -> bool:
         True if value matches pattern
         
     Examples:
-        matches_pattern("CNS0001A", "CNS*") -> True
-        matches_pattern("CNS0001A", "CNS000*") -> True
-        matches_pattern("CNS0001A", "CNS0001A") -> True
-        matches_pattern("CNS0001A", "ABC*") -> False
+        matches_pattern("SITE0001A", "SITE*") -> True
+        matches_pattern("SITE0001A", "SITE000*") -> True
+        matches_pattern("SITE0001A", "SITE0001A") -> True
+        matches_pattern("SITE0001A", "ABC*") -> False
     """
     if '*' not in pattern:
         return value == pattern
