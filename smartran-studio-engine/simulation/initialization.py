@@ -1,5 +1,5 @@
 """
-Simulation Initialization Module for CNS Sionna Simulation
+Simulation Initialization Module for SmartRAN Studio Simulation
 
 Provides on-demand initialization with configurable parameters.
 """
@@ -7,8 +7,8 @@ Provides on-demand initialization with configurable parameters.
 from typing import Optional
 from pydantic import BaseModel, Field
 import logging
-from sionna_sim_helpers import add_site_with_dualband_cells, iter_clustered_sites
-from cns_sionna_sim import MultiCellSim
+from simulation.helpers import add_site_with_dualband_cells, iter_clustered_sites
+from simulation.engine import MultiCellSim
 
 logger = logging.getLogger(__name__)
 

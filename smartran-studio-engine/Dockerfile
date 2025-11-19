@@ -19,14 +19,14 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir sionna==1.1.0 \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
-COPY cns_sionna_sim.py ./
-COPY sionna_sim_helpers.py ./
-
-
+# Copy application modules to workspace
+COPY api/ ./api/
+COPY simulation/ ./simulation/
+COPY analysis/ ./analysis/
+COPY db/ ./db/
 
 # Expose FastAPI port
 EXPOSE 8000
 
-# Run the FastAPI app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI app from the new location
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

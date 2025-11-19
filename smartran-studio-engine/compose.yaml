@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+  # ArangoDB Service - State Persistence
+  smartran-studio-arangodb:
+    image: arangodb:3.11
+    container_name: smartran-studio-arangodb
+    ports:
+      - "8529:8529"  # Web UI and HTTP API
+    volumes:
+      - arango_data:/var/lib/arangodb3
+      - arango_apps:/var/lib/arangodb3-apps
+    environment:
+      # ArangoDB Configuration
+      - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password  # Change for production!
+      - ARANGO_NO_AUTH=0  # Set to 1 to disable auth for testing
+    networks:
+      - smartran-studio-network
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
   smartran-studio-engine:
     build:
       context: .
@@ -51,6 +70,15 @@ services:
     # Networks - connect to smartran-studio-network for internal communication
     networks:
       - smartran-studio-network
+    depends_on:
+      - smartran-studio-arangodb
+
+# Volumes for data persistence
+volumes:
+  arango_data:
+    name: smartran_arango_data
+  arango_apps:
+    name: smartran_arango_apps
 
 # Define networks
 networks:

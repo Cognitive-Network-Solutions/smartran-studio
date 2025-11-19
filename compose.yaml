@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # ArangoDB Service - State Persistence
+  smartran-studio-arangodb:
+    image: arangodb:3.11
+    container_name: smartran-studio-arangodb
+    ports:
+      - "8529:8529"
+    volumes:
+      - arango_data:/var/lib/arangodb3
+      - arango_apps:/var/lib/arangodb3-apps
+    environment:
+      - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password
+      - ARANGO_NO_AUTH=0
+    networks:
+      - smartran-studio-network
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  # Simulation Engine - Core RF Simulation
+  smartran-studio-engine:
+    build:
+      context: ./smartran-studio-engine
+      dockerfile: Dockerfile
+    container_name: smartran-studio-engine
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ports:
+      - "8000:8000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - RAPIDS_NO_INITIALIZE=1
+      - CUDF_SPILL=0
+      - JUPYTER_ENABLE_LAB=yes
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529
+      - ARANGO_USERNAME=root
+      - ARANGO_PASSWORD=smartran-studio_dev_password
+      - ARANGO_DATABASE=smartran-studio_db
+    networks:
+      - smartran-studio-network
+    user: root
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+
+  # Backend - CLI Command Handler
+  backend:
+    build:
+      context: ./smartran-studio-interface/interface_backend
+      dockerfile: Dockerfile.backend
+    container_name: smartran-studio-backend
+    ports:
+      - "8001:8001"
+    environment:
+      - SIONNA_API_URL=http://smartran-studio-engine:8000
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529
+      - ARANGO_USERNAME=root
+      - ARANGO_PASSWORD=smartran-studio_dev_password
+      - ARANGO_DATABASE=smartran-studio_db
+    networks:
+      - smartran-studio-network
+    volumes:
+      - ./smartran-studio-interface/interface_backend/backend.py:/app/backend.py
+      - ./smartran-studio-interface/interface_backend/config.yaml:/app/config.yaml
+    command: ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    restart: unless-stopped
+
+  # Frontend - Web UI
+  frontend:
+    build:
+      context: ./smartran-studio-interface/interface_frontend
+      dockerfile: Dockerfile.frontend
+    container_name: smartran-studio-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - smartran-studio-network
+    restart: unless-stopped
+
+# Volumes
+volumes:
+  arango_data:
+    name: smartran_arango_data
+  arango_apps:
+    name: smartran_arango_apps
+
+# Networks
+networks:
+  smartran-studio-network:
+    driver: bridge
+    name: smartran-studio-network
+
