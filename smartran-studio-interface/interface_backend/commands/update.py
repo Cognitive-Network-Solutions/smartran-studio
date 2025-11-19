@@ -15,10 +15,10 @@ from framework import command, CommandResponse, ResponseType, ArgumentParser
 @command(
     name="update cell",
     description="Update single cell configuration",
-    usage="cns update cell <id> [params]",
+    usage="update cell <id> [params]",
     long_description="""Update single cell configuration
 
-Usage: cns update cell <id> [params]
+Usage: update cell <id> [params]
 
 Parameters:
   --tilt=<deg>          Tilt angle in degrees
@@ -28,9 +28,9 @@ Parameters:
   --freq=<hz>           Frequency in Hz
   
 Examples:
-  cns update cell 0 --tilt=12.0
-  cns update cell 5 --tilt=11.0 --power=3.0
-  cns update cell 10 --rows=8 --cols=1
+  update cell 0 --tilt=12.0
+  update cell 5 --tilt=11.0 --power=3.0
+  update cell 10 --rows=8 --cols=1
 """,
     response_type=ResponseType.SUCCESS
 )
@@ -58,7 +58,7 @@ async def cmd_update_cell(args: List[str]) -> CommandResponse:
     # Validate cell ID
     if not positional_args:
         return CommandResponse(
-            content="❌ Error: Cell ID required\n\nUsage: cns update cell <id> [params]\n\nUse --help for more information.",
+            content="❌ Error: Cell ID required\n\nUsage: update cell <id> [params]\n\nUse --help for more information.",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -128,10 +128,10 @@ Updated Configuration:
 @command(
     name="update cells query",
     description="Update cells matching query criteria",
-    usage="cns update cells query [query-criteria] [update-params]",
+    usage="update cells query [query-criteria] [update-params]",
     long_description="""Update multiple cells matching query criteria
 
-Usage: cns update cells query [query-criteria] [update-params]
+Usage: update cells query [query-criteria] [update-params]
 
 Query Criteria (filter which cells to update):
   --band=<id>               Filter by band identifier (e.g., H, L, M, X)
@@ -147,10 +147,10 @@ Update Parameters (what to change):
   --update-bs-cols=<n>              New antenna columns
 
 Examples:
-  cns update cells query --band=H --update-tilt-deg=12.0
-  cns update cells query --band=M --update-tilt-deg=11.0
-  cns update cells query --site-name=CNS000* --update-tilt-deg=11.0
-  cns update cells query --sector-id=0 --update-tilt-deg=10.0 --update-tx-rs-power-dbm=3.0
+  update cells query --band=H --update-tilt-deg=12.0
+  update cells query --band=M --update-tilt-deg=11.0
+  update cells query --site-name=SITE000* --update-tilt-deg=11.0
+  update cells query --sector-id=0 --update-tilt-deg=10.0 --update-tx-rs-power-dbm=3.0
 
 Note: All matching cells will be updated with the same values.
 """,

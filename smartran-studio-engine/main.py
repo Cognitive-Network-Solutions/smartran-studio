@@ -24,8 +24,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="CNS Sionna Simulation API",
-    description="FastAPI interface for CNS Sionna multi-cell simulation",
+    title="SmartRAN Studio Simulation API",
+    description="FastAPI interface for SmartRAN Studio Sionna multi-cell simulation",
     version="1.0.0"
 )
 
@@ -90,7 +90,7 @@ class AddSiteRequest(BaseModel):
 
 class AddCellRequest(BaseModel):
     """Request to add a single cell to an existing site"""
-    site_name: str = Field(..., description="Existing site name (e.g., 'CNS0001A')")
+    site_name: str = Field(..., description="Existing site name (e.g., 'SITE0001A')")
     sector_id: int = Field(..., ge=0, le=2, description="Sector ID (0, 1, or 2)")
     band: str = Field(..., description="Band identifier (e.g., 'H', 'L')")
     fc_hz: float = Field(..., gt=0, description="Frequency in Hz")

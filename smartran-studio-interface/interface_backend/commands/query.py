@@ -15,13 +15,13 @@ from framework import command, CommandResponse, ResponseType, TableData, Command
 @command(
     name="query_cells",
     description="Query cells with optional filter criteria",
-    usage="cns query cells [options]",
+    usage="query cells [options]",
     examples=[
-        "cns query cells",
-        "cns query cells --band=H",
-        "cns query cells --site-name=CNS000*",
-        "cns query cells --tilt-min=8 --tilt-max=10",
-        "cns query cells --band=H --limit=20"
+        "query cells",
+        "query cells --band=H",
+        "query cells --site-name=SITE000*",
+        "query cells --tilt-min=8 --tilt-max=10",
+        "query cells --band=H --limit=20"
     ],
     arguments=[
         CommandArgument("band", ArgumentType.STRING,
@@ -125,8 +125,8 @@ async def cmd_query_cells(args: Dict[str, Any]) -> CommandResponse:
 @command(
     name="query_sites",
     description="Query all sites in the simulation",
-    usage="cns query sites",
-    examples=["cns query sites"],
+    usage="query sites",
+    examples=["query sites"],
     response_type=ResponseType.TABLE,
     category="Query"
 )
@@ -176,8 +176,8 @@ async def cmd_query_sites(args: Dict[str, Any]) -> CommandResponse:
 @command(
     name="query_ues",
     description="Query User Equipment (UE) information",
-    usage="cns query ues",
-    examples=["cns query ues"],
+    usage="query ues",
+    examples=["query ues"],
     response_type=ResponseType.TEXT,
     category="Query"
 )
@@ -210,7 +210,7 @@ Compute Results Available:
   UEs with Assignment:  {results.get('num_ues_with_assignment', 0):,}
 """
         else:
-            output += "\nNo compute results yet. Run 'cns sim compute' to generate RSRP data."
+            output += "\nNo compute results yet. Run 'sim compute' to generate RSRP data."
         
         return CommandResponse(
             content=output,

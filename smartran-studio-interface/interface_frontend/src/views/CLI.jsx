@@ -9,9 +9,9 @@ import InitWizard from '../components/widgets/InitWizard'
  */
 const WELCOME_MESSAGE = {
   type: 'text', 
-  content: `CNS CLI - Cognitive Network Solutions
+  content: `SmartRAN Studio CLI - Radio Access Network Simulation
 
-Connected to: CNS Sionna Simulation
+Connected to: SmartRAN Studio Simulation Engine
 
 Quick Start:
   status                    - Check simulation status
@@ -26,12 +26,12 @@ export default function CLI() {
   const [input, setInput] = useState('')
   // Load outputs from sessionStorage or use welcome message
   const [outputs, setOutputs] = useState(() => {
-    const saved = sessionStorage.getItem('cns-cli-outputs')
+    const saved = sessionStorage.getItem('smartran-cli-outputs')
     return saved ? JSON.parse(saved) : [WELCOME_MESSAGE]
   })
   // Load command history from sessionStorage
   const [commandHistory, setCommandHistory] = useState(() => {
-    const saved = sessionStorage.getItem('cns-cli-history')
+    const saved = sessionStorage.getItem('smartran-cli-history')
     return saved ? JSON.parse(saved) : []
   })
   const [historyIndex, setHistoryIndex] = useState(null) // null = at the newest (empty input)
@@ -78,12 +78,12 @@ export default function CLI() {
 
   // Persist outputs to sessionStorage
   useEffect(() => {
-    sessionStorage.setItem('cns-cli-outputs', JSON.stringify(outputs))
+    sessionStorage.setItem('smartran-cli-outputs', JSON.stringify(outputs))
   }, [outputs])
 
   // Persist command history to sessionStorage
   useEffect(() => {
-    sessionStorage.setItem('cns-cli-history', JSON.stringify(commandHistory))
+    sessionStorage.setItem('smartran-cli-history', JSON.stringify(commandHistory))
   }, [commandHistory])
 
   const handleSubmit = async (e) => {
@@ -92,25 +92,25 @@ export default function CLI() {
     const command = input.trim()
     
     // Handle clear command
-    if (command.toLowerCase() === 'clear' || command.toLowerCase() === 'cns clear') {
+    if (command.toLowerCase() === 'clear') {
       const clearMessage = { 
         type: 'text', 
-        content: 'CNS CLI - Ready for commands...\n\nType "help" for available commands' 
+        content: 'SmartRAN Studio CLI - Ready for commands...\n\nType "help" for available commands' 
       }
       setOutputs([clearMessage])
-      sessionStorage.setItem('cns-cli-outputs', JSON.stringify([clearMessage]))
+      sessionStorage.setItem('smartran-cli-outputs', JSON.stringify([clearMessage]))
       setInput('')
       setIsWizardMode(false) // Exit wizard mode
       return
     }
 
-    // Check if this is cns init without --default or --config -> launch widget
-    const normalizedCmd = command.toLowerCase().replace(/^cns\s+/, '')
+    // Check if this is init without --default or --config -> launch widget
+    const normalizedCmd = command.toLowerCase().replace(/^(smartran|cns)\s+/, '')
     if (normalizedCmd === 'init' || normalizedCmd.startsWith('init ')) {
       if (!normalizedCmd.includes('--default') && !normalizedCmd.includes('--config')) {
         // Launch the interactive widget
         // Add to command history immediately (even if cancelled)
-        setCommandHistory(prev => [...prev, 'cns init'])
+        setCommandHistory(prev => [...prev, 'init'])
         setActiveWidget('init')
         setInput('')
         return
@@ -153,7 +153,7 @@ export default function CLI() {
       if (response.result === '[CLEAR_SCREEN]') {
         const clearMessage = { 
           type: 'text', 
-          content: 'CNS CLI - Ready for commands...\n\nType "help" for available commands' 
+          content: 'SmartRAN Studio CLI - Ready for commands...\n\nType "help" for available commands' 
         }
         setOutputs([clearMessage])
         setIsWizardMode(false)
@@ -311,7 +311,7 @@ export default function CLI() {
     // Add command and formatted response to output
     // (command already added to history when widget launched)
     setOutputs(prev => [...prev, 
-      { type: 'command', content: `${'═'.repeat(80)}\n> cns init\n` },
+      { type: 'command', content: `${'═'.repeat(80)}\n> init\n` },
       { type: 'response', content: result }
     ])
   }

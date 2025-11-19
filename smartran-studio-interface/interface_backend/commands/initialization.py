@@ -126,9 +126,9 @@ async def cmd_init_interactive(args: List[str]) -> str:
         return """Initialize the simulation
 
 Usage: 
-  cns init                 Start interactive wizard (step-by-step prompts)
-  cns init --default       Initialize with all default values
-  cns init --config <json> Initialize with JSON configuration
+  init                 Start interactive wizard (step-by-step prompts)
+  init --default       Initialize with all default values
+  init --config <json> Initialize with JSON configuration
 
 Interactive Wizard Mode:
   Walks you through each configuration parameter with defaults shown.
@@ -230,8 +230,8 @@ Processing:
   Cells Chunk:      {chunking.get('cells_chunk', 0)}
   UE Chunk:         {chunking.get('ue_chunk', 0)}
 
-Simulation ready! Try 'cns sim compute' to run your first calculation.
-Use 'cns config save <name>' to save this configuration.
+Simulation ready! Try 'sim compute' to run your first calculation.
+Use 'config save <name>' to save this configuration.
 """,
                 response_type=ResponseType.SUCCESS
             )
@@ -309,8 +309,8 @@ Processing:
   Cells Chunk:      {chunking.get('cells_chunk', 0)}
   UE Chunk:         {chunking.get('ue_chunk', 0)}
 
-Simulation ready! Try 'cns sim compute' to run your first calculation.
-Use 'cns config save <name>' to save this configuration.
+Simulation ready! Try 'sim compute' to run your first calculation.
+Use 'config save <name>' to save this configuration.
 """,
                 response_type=ResponseType.SUCCESS
             )
@@ -347,7 +347,7 @@ def get_init_wizard_prompt() -> str:
     bar = "█" * filled + "░" * (bar_width - filled)
     
     return f"""╔════════════════════════════════════════════════════════════════════════════════╗
-║                    CNS SIMULATION INITIALIZATION WIZARD                        ║
+║                 SMARTRAN STUDIO INITIALIZATION WIZARD                          ║
 ╠════════════════════════════════════════════════════════════════════════════════╣
 ║                                                                                ║
 ║  Progress: [{bar}] {progress_pct}%   Step {step + 1}/{len(INIT_WIZARD_STEPS)}

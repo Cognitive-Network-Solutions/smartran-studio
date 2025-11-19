@@ -1,15 +1,13 @@
 version: '3.8'
 
 services:
-  cns-sionna-sim:
+  smartran-studio-engine:
     build:
       context: .
       dockerfile: Dockerfile
       
-      args:
-        GRAPHRAN_TOKEN: ${GRAPHRAN_TOKEN}
-        GRAPHRAN_PROJECT_ID: ${GRAPHRAN_PROJECT_ID}
-    container_name: cns-sionna-sim
+
+    container_name: smartran-studio-engine
     
     # GPU access configuration
     deploy:
@@ -38,10 +36,10 @@ services:
       - CUDF_SPILL=0
       - JUPYTER_ENABLE_LAB=yes
       - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json # Mount GCP credentials for Google Cloud Storage
-      - ARANGO_HOST=http://cns-arangodb:8529
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529
       - ARANGO_USERNAME=root
-      - ARANGO_PASSWORD=cns_dev_password
-      - ARANGO_DATABASE=cns_sim
+      - ARANGO_PASSWORD=smartran-studio_dev_password
+      - ARANGO_DATABASE=smartran-studio_db
     
     # Working directory
     working_dir: /workspace
@@ -50,12 +48,12 @@ services:
     tty: true
     stdin_open: true
     
-    # Networks - connect to cns-network for internal communication
+    # Networks - connect to smartran-studio-network for internal communication
     networks:
-      - cns-network
+      - smartran-studio-network
 
 # Define networks
 networks:
-  cns-network:
-    driver: bridge  # Create the network (Sionna is primary service)
-    name: cns-network
+  smartran-studio-network:
+    driver: bridge  # Create the network (engine is primary service)
+    name: smartran-studio-network

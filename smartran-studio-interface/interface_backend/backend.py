@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-CNS CLI Backend API - Main application entry point (Framework version)
+SmartRAN Studio CLI Backend API - Main application entry point (Framework version)
 
 This is the main FastAPI application that provides CLI commands
-for interacting with CNS networks (simulation and live).
+for interacting with SmartRAN Studio networks (simulation and live).
 """
 import uvicorn
 import json
@@ -34,9 +34,9 @@ from commands.initialization import process_init_wizard_input, cmd_init_interact
 # ========== FastAPI App Setup ==========
 
 app = FastAPI(
-    title="CNS CLI Backend API",
+    title="SmartRAN Studio CLI Backend API",
     version="2.0.0 (Framework)",
-    description="Backend API for CNS CLI commands with framework support"
+    description="Backend API for SmartRAN Studio CLI commands with framework support"
 )
 
 # Enable CORS
@@ -96,7 +96,7 @@ def convert_response(response: CommandResponse) -> APICommandResponse:
 @app.get("/")
 async def root():
     """Health check endpoint"""
-    return {"status": "ok", "message": "CNS CLI Backend API is running (Framework v2.0)"}
+    return {"status": "ok", "message": "SmartRAN Studio CLI Backend API is running (Framework v2.0)"}
 
 
 @app.get("/map/cells")
@@ -164,8 +164,8 @@ async def execute_command(req: CommandRequest) -> APICommandResponse:
     if not parts:
         return APICommandResponse(result="No command provided", exit_code=1)
     
-    # Remove 'cns' prefix if present
-    if parts[0].lower() == "cns":
+    # Remove 'smartran' or 'cns' prefix if present (legacy support)
+    if parts[0].lower() in ["smartran", "cns"]:
         parts = parts[1:]
     
     if not parts:
@@ -244,7 +244,7 @@ async def execute_command(req: CommandRequest) -> APICommandResponse:
         # Unknown command
         result = f"""❌ Unknown command: {cmd}
 
-Try 'cns help' to see available commands.
+Try 'help' to see available commands.
 
 Common commands:
   connect, status, help, query, update, compute, config
@@ -270,7 +270,7 @@ Common commands:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🚀 Starting CNS CLI Backend API (Framework v2.0)")
+    print("🚀 Starting SmartRAN Studio CLI Backend API (Framework v2.0)")
     print("=" * 60)
     print("\nServer running at: http://localhost:8001")
     print("API docs at: http://localhost:8001/docs")

@@ -1,5 +1,5 @@
 """
-ArangoDB client for CNS simulation state management.
+ArangoDB client for SmartRAN Studio simulation state management.
 
 Manages:
 - Session cache (current init config)
@@ -25,10 +25,10 @@ class SimStateManager:
                  database: str = None):
         """Initialize ArangoDB client (reads from env vars if not provided)"""
         # Read from environment variables (injected by Docker Compose)
-        host = host or os.getenv('ARANGO_HOST', 'http://cns-arangodb:8529')
+        host = host or os.getenv('ARANGO_HOST', 'http://smartran-studio-arangodb:8529')
         username = username or os.getenv('ARANGO_USERNAME', 'root')
-        password = password or os.getenv('ARANGO_PASSWORD', 'cns_dev_password')
-        database = database or os.getenv('ARANGO_DATABASE', 'cns_sim')
+        password = password or os.getenv('ARANGO_PASSWORD', 'smartran-studio_dev_password')
+        database = database or os.getenv('ARANGO_DATABASE', 'smartran-studio_db')
         self.client = ArangoClient(hosts=host)
         
         # Connect to _system database first to check/create our database

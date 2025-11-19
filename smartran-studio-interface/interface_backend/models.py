@@ -1,5 +1,5 @@
 """
-Pydantic models for CNS CLI Backend API
+Pydantic models for SmartRAN Studio CLI Backend API
 """
 from pydantic import BaseModel
 from typing import Optional, Dict, Any

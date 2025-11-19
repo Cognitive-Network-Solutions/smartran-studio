@@ -1,5 +1,5 @@
 """
-Configuration management for CNS CLI Backend
+Configuration management for SmartRAN Studio CLI Backend
 """
 from pathlib import Path
 import yaml
@@ -11,7 +11,7 @@ def load_config() -> Dict[str, Any]:
     """Load configuration from environment variables and config.yaml"""
     
     # Read from environment variables (injected by Docker Compose)
-    sionna_api_url = os.getenv('SIONNA_API_URL', 'http://cns-sionna-sim:8000')
+    sionna_api_url = os.getenv('SIONNA_API_URL', 'http://smartran-studio-engine:8000')
     
     # Try to load config.yaml for additional settings
     config_path = Path(__file__).parent / "config.yaml"
@@ -27,7 +27,7 @@ def load_config() -> Dict[str, Any]:
     return {
         "networks": {
             "sim": {
-                "name": "CNS Sionna Simulation",
+                "name": "SmartRAN Studio Simulation",
                 "api_url": sionna_api_url,
                 "enabled": True
             }

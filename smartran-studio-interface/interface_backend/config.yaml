@@ -1,16 +1,16 @@
-# CNS CLI Backend Configuration
+# SmartRAN Studio CLI Backend Configuration
 # Configuration for network connections and API endpoints
 
 networks:
   sim:
-    name: "CNS Sionna Simulation"
+    name: "SmartRAN Studio Simulation"
     type: "simulation"
     description: "Sionna-based RF simulation environment"
     
     # ============================================================
     # INTERNAL DOCKER NETWORK (Recommended - fastest)
-    # Use when both backend and Sionna are on cns-network
-    api_url: "http://cns-sionna-sim:8000"
+    # Use when both backend and engine are on smartran-studio-network
+    api_url: "http://smartran-studio-engine:8000"
     # ============================================================
     
     # OTHER OPTIONS (uncomment if needed):
@@ -26,7 +26,7 @@ networks:
   # prod:
   #   name: "Production Network"
   #   type: "live"
-  #   api_url: "https://api.cns.network"
+  #   api_url: "https://api.smartran.network"
   #   auth_required: true
   #   enabled: false
 

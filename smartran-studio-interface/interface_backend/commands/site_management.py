@@ -18,13 +18,13 @@ from framework import command, CommandResponse, ResponseType, ArgumentParser
 @command(
     name="site add",
     description="Add a new site to the simulation",
-    usage="cns site add --x=<x> --y=<y> [options]",
+    usage="site add --x=<x> --y=<y> [options]",
     long_description="""Add a new site to the simulation
 
 Creates a site at a specific location. A site is just a physical location (x, y, height).
 Sectors don't actually exist until you add cells to them.
 
-Usage: cns site add --x=<x> --y=<y> [options]
+Usage: site add --x=<x> --y=<y> [options]
 
 Required:
   --x=<meters>        X coordinate in meters
@@ -36,7 +36,7 @@ Options:
 
 Description:
   Creates a new site at the specified location.
-  The site name is automatically assigned as the next available CNS####A number.
+  The site name is automatically assigned as the next available SITE####A number.
   
   IMPORTANT: This only creates the site location, not the sectors/cells.
   Sectors become "real" when you add the first cell to them.
@@ -52,15 +52,15 @@ Description:
 
 Examples:
   # Basic site at origin with default azimuths (0°, 120°, 240°)
-  cns site add --x=0 --y=0
+  site add --x=0 --y=0
   
   # Site with rotated sector pattern (45°, 165°, 285°)
-  cns site add --x=1000 --y=500 --azimuth=45
+  site add --x=1000 --y=500 --azimuth=45
   
   # Tall site
-  cns site add --x=-500 --y=1200 --height=30
+  site add --x=-500 --y=1200 --height=30
 
-See also: cns cell add, cns query sites
+See also: cell add, query sites
 """,
     response_type=ResponseType.SUCCESS
 )
@@ -94,14 +94,14 @@ async def cmd_add_site(args: List[str]) -> CommandResponse:
     # Validate required parameters
     if parsed_args.x is None:
         return CommandResponse(
-            content="❌ Error: X coordinate is required\n\nUsage: cns site add --x=<meters> --y=<meters>\n\nExample: cns site add --x=1000 --y=500",
+            content="❌ Error: X coordinate is required\n\nUsage: site add --x=<meters> --y=<meters>\n\nExample: site add --x=1000 --y=500",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
     
     if parsed_args.y is None:
         return CommandResponse(
-            content="❌ Error: Y coordinate is required\n\nUsage: cns site add --x=<meters> --y=<meters>\n\nExample: cns site add --x=1000 --y=500",
+            content="❌ Error: Y coordinate is required\n\nUsage: site add --x=<meters> --y=<meters>\n\nExample: site add --x=1000 --y=500",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -148,9 +148,9 @@ Note: Sectors don't exist until you add cells to them.
       When adding the first cell to a sector, you can override its azimuth.
 
 Next Steps:
-  • Add first cell:  cns cell add --site={result['site_name']} --sector=0 --band=H --freq=2500e6
-  • Set azimuth:     cns cell add --site={result['site_name']} --sector=0 --band=H --freq=2500e6 --azimuth=45
-  • View site:       cns query sites
+  • Add first cell:  cell add --site={result['site_name']} --sector=0 --band=H --freq=2500e6
+  • Set azimuth:     cell add --site={result['site_name']} --sector=0 --band=H --freq=2500e6 --azimuth=45
+  • View site:       query sites
 """
         
         return CommandResponse(
@@ -169,16 +169,16 @@ Next Steps:
 @command(
     name="cell add",
     description="Add a cell to an existing site",
-    usage="cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz> [options]",
+    usage="cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz> [options]",
     long_description="""Add a cell to an existing site
 
 Adds a single cell to an existing site's sector. The cell must be associated
-with an existing site - use 'cns site add' first if you need a new site.
+with an existing site - use 'site add' first if you need a new site.
 
-Usage: cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz> [options]
+Usage: cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz> [options]
 
 Required:
-  --site=<name>       Existing site name (e.g., CNS0001A)
+  --site=<name>       Existing site name (e.g., SITE0001A)
   --sector=<0-2>      Sector ID (0, 1, or 2)
   --band=<band>       Band identifier (e.g., H, L, M)
   --freq=<hz>         Frequency in Hz (e.g., 2500e6 for 2.5 GHz)
@@ -195,7 +195,7 @@ Description:
   The cell name is automatically generated following the naming convention.
   
   IMPORTANT RULES:
-  1. Cells MUST belong to existing sites - create site first with 'cns site add'
+  1. Cells MUST belong to existing sites - create site first with 'site add'
   2. Max 3 sectors per site (IDs: 0, 1, 2)
   3. Each BAND must be unique per sector (no duplicate H+H on same sector)
   4. Sector azimuth can ONLY be set when adding the FIRST cell to that sector
@@ -209,18 +209,18 @@ Description:
 
 Examples:
   # First cell on sector 0 - set azimuth to 45°
-  cns cell add --site=CNS0001A --sector=0 --band=H --freq=2500e6 --azimuth=45
+  cell add --site=SITE0001A --sector=0 --band=H --freq=2500e6 --azimuth=45
   
   # Second cell on same sector - inherits 45° azimuth automatically
-  cns cell add --site=CNS0001A --sector=0 --band=L --freq=600e6
+  cell add --site=SITE0001A --sector=0 --band=L --freq=600e6
   
   # First cell on sector 1 - set azimuth to 165°
-  cns cell add --site=CNS0001A --sector=1 --band=H --freq=2500e6 --azimuth=165
+  cell add --site=SITE0001A --sector=1 --band=H --freq=2500e6 --azimuth=165
   
   # Custom tilt and power
-  cns cell add --site=CNS0001A --sector=2 --band=H --freq=2500e6 --tilt=12 --power=3
+  cell add --site=SITE0001A --sector=2 --band=H --freq=2500e6 --tilt=12 --power=3
 
-See also: cns site add, cns query cells, cns update cell
+See also: site add, query cells, update cell
 """,
     response_type=ResponseType.SUCCESS
 )
@@ -259,28 +259,28 @@ async def cmd_add_cell(args: List[str]) -> CommandResponse:
     # Validate required parameters
     if not parsed_args.site:
         return CommandResponse(
-            content="❌ Error: Site name is required\n\nUsage: cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cns cell add --site=CNS0001A --sector=0 --band=H --freq=2500e6",
+            content="❌ Error: Site name is required\n\nUsage: cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cell add --site=SITE0001A --sector=0 --band=H --freq=2500e6",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
     
     if parsed_args.sector is None:
         return CommandResponse(
-            content="❌ Error: Sector ID is required (0, 1, or 2)\n\nUsage: cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cns cell add --site=CNS0001A --sector=0 --band=H --freq=2500e6",
+            content="❌ Error: Sector ID is required (0, 1, or 2)\n\nUsage: cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cell add --site=SITE0001A --sector=0 --band=H --freq=2500e6",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
     
     if not parsed_args.band:
         return CommandResponse(
-            content="❌ Error: Band identifier is required\n\nUsage: cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cns cell add --site=CNS0001A --sector=0 --band=H --freq=2500e6",
+            content="❌ Error: Band identifier is required\n\nUsage: cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cell add --site=SITE0001A --sector=0 --band=H --freq=2500e6",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
     
     if parsed_args.freq is None:
         return CommandResponse(
-            content="❌ Error: Frequency is required\n\nUsage: cns cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cns cell add --site=CNS0001A --sector=0 --band=H --freq=2500e6",
+            content="❌ Error: Frequency is required\n\nUsage: cell add --site=<name> --sector=<0-2> --band=<H/L> --freq=<hz>\n\nExample: cell add --site=SITE0001A --sector=0 --band=H --freq=2500e6",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -347,9 +347,9 @@ All bands on sector {result['sector_id']}: {', '.join(existing_bands)}
 ✓ Cell is now active and will be included in compute operations
 
 Next Steps:
-  • View cells:   cns query cells --site-name={result['site_name']}
-  • Add more:     cns cell add --site={result['site_name']} --sector=<n> --band=<X> --freq=<hz>
-  • Run compute:  cns sim compute --name="test-run"
+  • View cells:   query cells --site-name={result['site_name']}
+  • Add more:     cell add --site={result['site_name']} --sector=<n> --band=<X> --freq=<hz>
+  • Run compute:  sim compute --name="test-run"
 """
         
         return CommandResponse(
@@ -361,13 +361,13 @@ Next Steps:
         error_msg = str(e)
         # Provide helpful error messages for common issues
         if "not found" in error_msg.lower():
-            error_msg += f"\n\nAvailable sites: Run 'cns query sites' to see existing sites"
-            error_msg += f"\nCreate site: cns site add --x=<x> --y=<y>"
+            error_msg += f"\n\nAvailable sites: Run 'query sites' to see existing sites"
+            error_msg += f"\nCreate site: site add --x=<x> --y=<y>"
         elif "already exists on" in error_msg.lower():
             # Duplicate band error - message already contains good info from API
             pass
         elif "duplicate" in error_msg.lower() or "unique" in error_msg.lower():
-            error_msg += f"\n\nTip: Check existing cells with 'cns query cells --site-name={parsed_args.site}'"
+            error_msg += f"\n\nTip: Check existing cells with 'query cells --site-name={parsed_args.site}'"
         
         return CommandResponse(
             content=f"❌ Error adding cell: {error_msg}",
@@ -378,20 +378,20 @@ Next Steps:
 
 @command(
     name="site list",
-    description="List all sites (alias for 'cns query sites')",
-    usage="cns site list",
+    description="List all sites (alias for 'query sites')",
+    usage="site list",
     long_description="""List all sites in the simulation
 
-This is an alias for 'cns query sites'.
+This is an alias for 'query sites'.
 
-Usage: cns site list
+Usage: site list
 
 Shows a table of all sites with their positions and cell counts.
 
 Example:
-  cns site list
+  site list
 
-See also: cns query sites, cns query cells
+See also: query sites, query cells
 """,
     response_type=ResponseType.TEXT
 )

@@ -1,5 +1,5 @@
 """
-Session state management for CNS CLI Backend
+Session state management for SmartRAN Studio CLI Backend
 """
 from typing import Dict, Any
 from config import CONFIG

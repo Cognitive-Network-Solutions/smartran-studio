@@ -1,6 +1,6 @@
 services:
   # ArangoDB Service - State Persistence
-  cns-arangodb:
+  smartran-studio-arangodb:
     image: arangodb:3.11
     container_name: smartran-studio-arangodb
     ports:
@@ -13,7 +13,7 @@ services:
       - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password  # Change for production!
       - ARANGO_NO_AUTH=0  # Set to 1 to disable auth for testing
     networks:
-      - cns-network
+      - smartran-studio-network
     restart: unless-stopped
     tty: true
     stdin_open: true
@@ -68,12 +68,12 @@ services:
 # Volumes for data persistence
 volumes:
   arango_data:
-    name: cns_arango_data
+    name: smartran_arango_data
   arango_apps:
-    name: cns_arango_apps
+    name: smartran_arango_apps
 
 # Networks
 networks:
   smartran-studio-network:
-    external: true  # Join existing network created by Sionna
+    external: true  # Join existing network created by engine
     name: smartran-studio-network

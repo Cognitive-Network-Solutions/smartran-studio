@@ -17,18 +17,18 @@ from framework import command, CommandResponse, ResponseType, CommandArgument, A
 @command(
     name="help",
     description="Show help message with available commands",
-    usage="cns help",
-    examples=["cns help"],
+    usage="help",
+    examples=["help"],
     response_type=ResponseType.INFO,
     category="General",
     requires_connection=False
 )
 async def cmd_help(args: Dict[str, Any]) -> CommandResponse:
     """Show help message"""
-    content = """CNS CLI - Cognitive Network Solutions Command Line Interface
+    content = """SmartRAN Studio CLI - Radio Access Network Simulation Interface
 
 USAGE:
-  cns <command> [arguments]
+  <command> [arguments]
 
 CONNECTION MANAGEMENT:
   connect <network>         Connect to a network (sim, prod, etc.)
@@ -45,35 +45,35 @@ SIMULATION INITIALIZATION:
 QUERY COMMANDS:
   query cells               List all cells
   query cells <criteria>    Query cells with filter criteria
-                            Example: cns query cells --band=H --tilt-min=10
+                            Example: query cells --band=H --tilt-min=10
   query sites               List all sites
   query ues                 Show UE information
 
 UPDATE COMMANDS:
   update cell <id> <params> Update single cell configuration
-                            Example: cns update cell 0 --tilt=12.0
+                            Example: update cell 0 --tilt=12.0
   update cells bulk <json>  Bulk update multiple cells
   update cells query <...>  Update cells matching query criteria
-                            Example: cns update cells query --band=M --update-tilt-deg=11.0
+                            Example: update cells query --band=M --update-tilt-deg=11.0
   
 SIMULATION OPERATIONS:
   sim compute --name=<name> Run fresh simulation compute (generates snapshot)
   drop ues <count>          Drop/redrop UEs in simulation
-                            Example: cns drop ues 50000 --layout=box
+                            Example: drop ues 50000 --layout=box
 
 SNAPSHOT MANAGEMENT:
   snapshot list             List all saved measurement snapshots
-                            Example: cns snapshot list --limit=50
+                            Example: snapshot list --limit=50
   snapshot get <id>         View detailed snapshot metadata
-                            Example: cns snapshot get 2025-11-06_15-30-22
+                            Example: snapshot get 2025-11-06_15-30-22
   snapshot delete <id>      Delete a snapshot and its reports
-                            Example: cns snapshot delete 2025-11-06_15-30-22
+                            Example: snapshot delete 2025-11-06_15-30-22
 
 CONFIGURATION MANAGEMENT:
   config save <name>        Save current simulation state
-                            Example: cns config save baseline
+                            Example: config save baseline
   config load <name>        Restore saved configuration
-                            Example: cns config load baseline
+                            Example: config load baseline
   config list               List all saved configurations
   config delete <name>      Delete a saved configuration
 
