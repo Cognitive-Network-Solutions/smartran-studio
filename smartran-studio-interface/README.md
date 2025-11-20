@@ -1,291 +1,164 @@
-# CNS Protostack Interface
+# SmartRAN Studio - Interface
 
-A web-based CLI interface for interacting with the CNS Sionna RF simulation and future network sources.
+Web-based command-line interface for SmartRAN Studio simulation control.
 
-## 🎯 Overview
+## Overview
 
-The CNS Protostack Interface provides a command-line interface accessed through a web browser. It allows you to initialize simulations, query network topology, update cell configurations, run compute operations, and analyze results—all through an intuitive terminal interface.
+The interface provides a terminal-style web UI for interacting with the simulation engine. It consists of three components:
+1. **Frontend** - React-based CLI interface
+2. **Backend** - FastAPI command processor
+3. **Database** - ArangoDB for state persistence
 
-### Architecture
+## Components
 
-```
-Browser (localhost:8080)
-    ↓
-[Frontend Container - Nginx]
-    ├─ Serves CLI web interface
-    └─ Proxies /api/* to backend
-         ↓
-[Backend Container - FastAPI]
-    └─ Processes CLI commands
-         ↓
-[Sionna Simulation API]
-    └─ RF simulation engine
-```
+### Frontend (`interface_frontend/`)
 
-## 🚀 Quick Start
+**Technology**: React 18 + Vite + TailwindCSS
 
-### Prerequisites
-- Docker Desktop (Windows/Mac) or Docker Engine + Docker Compose (Linux)
-- Running Sionna simulation (see `cns-meets-sionna/`)
+Web-based CLI with:
+- Terminal-style command input
+- Command history and autocomplete
+- Interactive initialization wizard
+- Real-time response rendering
+- Session persistence
 
-### Start the Interface
+**Access**: http://localhost:8080
 
-```bash
-# From cns-protostack-interface directory
-docker compose up --build -d
-```
+[Frontend README](interface_frontend/README.md)
 
-**Access:** Open `http://localhost:8080` in your browser
+### Backend (`interface_backend/`)
 
-### First Commands
+**Technology**: FastAPI (Python 3.11)
 
-```bash
-# Check connection
-cns status
+Command processing engine with:
+- Command framework with automatic registration
+- Argument parsing and validation
+- Session state management
+- Simulation engine API client
+- Configuration save/load
 
-# Initialize simulation with defaults
-cns init --default
+**API**: http://localhost:8001
 
-# Query cells
-cns query cells
+[Backend README](interface_backend/README.md)
 
-# Filter by band
-cns query cells --band=H
+### Database (`interface_db/`)
 
-# Update cell tilt
-cns update cell 0 --tilt=12.0
+**Technology**: ArangoDB 3.11
 
-# Run simulation
-cns compute
-```
+Persistent storage for:
+- Simulation configurations
+- Measurement snapshots
+- Session state
 
-## 📁 Repository Structure
+**Access**: http://localhost:8529
 
-```
-cns-protostack-interface/
-├── interface_frontend/        # Web-based CLI (Nginx)
-│   ├── cli.js                # Terminal logic
-│   ├── index.html            # UI layout
-│   └── README.md             # CLI usage guide
-├── interface_backend/         # Command processor (FastAPI)
-│   ├── backend.py            # Main application
-│   ├── commands/             # Command handlers
-│   ├── config.yaml           # Network configuration
-│   └── README.md             # Backend architecture
-├── interface_db/              # ArangoDB for persistence
-│   └── README.md             # Database setup guide
-├── compose.yaml               # Docker orchestration
-└── README.md                  # This file
-```
+[Database README](interface_db/README.md)
 
-## 📖 Documentation
+## Running
 
-- **[Frontend/CLI Guide](interface_frontend/README.md)** - All CLI commands, usage examples, workflows
-- **[Backend Architecture](interface_backend/README.md)** - Backend structure, adding commands, API integration
-- **[Database Setup](interface_db/README.md)** - ArangoDB configuration (future: state persistence)
-- **[API Reference](API_RESPONSE_REFERENCE.md)** - Sionna API response formats
-
-## 🐳 Docker Setup
-
-### Network Configuration
-
-The interface connects to the Sionna simulation via Docker networking:
-
-```yaml
-# cns-meets-sionna/compose.yaml creates the network
-networks:
-  cns-network:
-    driver: bridge
-
-# cns-protostack-interface/compose.yaml joins it
-networks:
-  cns-network:
-    external: true
-```
-
-### Services
-
-| Service | Container | Port | Purpose |
-|---------|-----------|------|---------|
-| Frontend | `cns-frontend` | 8080 | Web UI |
-| Backend | `cns-backend` | 8001 | Command processor |
-| Sionna | `cns-sionna-sim` | 8000 | Simulation API |
-| ArangoDB | `cns-arangodb` | 8529 | Database (optional) |
-
-### Common Commands
+The interface runs as part of the main Docker Compose stack. From the repository root:
 
 ```bash
-# Start services
-docker compose up -d
-
-# Rebuild after code changes
-docker compose up --build -d
-
-# View logs
-docker compose logs -f backend
-
-# Stop services
-docker compose down
+docker-compose up -d
 ```
 
-### Troubleshooting
+Then access the web UI at: **http://localhost:8080**
 
-**Backend connection issues:**
-```bash
-# Check if all containers are running
-docker ps
+## Command Framework
 
-# Test Sionna API directly
-curl http://localhost:8000/
+The backend uses a flexible command framework located in `interface_backend/framework/`. Commands are auto-registered from the `commands/` directory.
 
-# Check backend logs
-docker logs cns-backend
+### Adding a Command
+
+1. Create command module in `interface_backend/commands/`
+2. Use `@command` decorator
+3. Define arguments with `CommandArgument`
+4. Return `CommandResponse`
+
+Example:
+
+```python
+from framework import command, CommandResponse, ResponseType
+
+@command(
+    name="my-command",
+    description="Does something useful",
+    usage="srs my-command [args]",
+    category="General"
+)
+async def cmd_my_command(args: Dict[str, Any]) -> CommandResponse:
+    # Process command
+    return CommandResponse(
+        content="Command executed successfully",
+        response_type=ResponseType.SUCCESS
+    )
 ```
 
-**Port conflicts:**
-Edit `compose.yaml` and change port mappings:
-```yaml
-frontend:
-  ports:
-    - "3000:80"  # Change 8080 to 3000
-```
+## Configuration
 
-## 🔧 Configuration
-
-### Backend Configuration (`interface_backend/config.yaml`)
+### Backend Config (`interface_backend/config.yaml`)
 
 ```yaml
 networks:
   sim:
-    name: "CNS Sionna Simulation"
-    type: "simulation"
-    api_url: "http://cns-sionna-sim:8000"  # Internal Docker network
+    name: "SmartRAN Studio Simulation"
+    api_url: "http://smartran-studio-sim-engine:8000"
     enabled: true
 
 default_network: "sim"
 ```
 
-**API URL Options:**
-- `http://cns-sionna-sim:8000` - Both containers in Docker (recommended)
-- `http://host.docker.internal:8000` - Backend in Docker, Sionna on host
-- `http://localhost:8000` - Backend outside Docker
+### Environment Variables
 
-### Adding New Networks
+Set via Docker Compose:
+- `SIONNA_API_URL` - Simulation engine URL
+- `ARANGO_HOST` - Database host
+- `ARANGO_USERNAME` - Database user
+- `ARANGO_PASSWORD` - Database password
+- `ARANGO_DATABASE` - Database name
 
-Edit `config.yaml`:
-```yaml
-networks:
-  staging:
-    name: "Staging Environment"
-    api_url: "https://staging-api.cns.network"
-    enabled: true
-```
+## Development
 
-Then connect:
+### Frontend Development
+
 ```bash
-cns connect staging
+cd interface_frontend
+npm install
+npm run dev
 ```
 
-## 🎨 Features
+Access at: http://localhost:5173
 
-✅ **Interactive Wizard** - Step-by-step simulation setup  
-✅ **Flexible Queries** - Filter cells/sites with multiple criteria  
-✅ **Bulk Updates** - Update multiple cells at once  
-✅ **Beautiful Tables** - HTML tables with dark/light theme support  
-✅ **Command History** - Scroll through previous commands  
-✅ **Tab Completion** - Auto-complete based on command history  
-✅ **Context-Sensitive Help** - `--help` on any command  
-✅ **Strict Validation** - Clear error messages for invalid input  
+### Backend Development
 
-## 💻 Development
+Hot reload is enabled in Docker Compose via volume mounts:
+- `backend.py` → `/app/backend.py`
+- `config.yaml` → `/app/config.yaml`
 
-### Local Development (Outside Docker)
+Changes are applied automatically.
 
-**Start Backend:**
+### Local Backend (Without Docker)
+
 ```bash
 cd interface_backend
 pip install -r requirements.txt
-python backend.py
+uvicorn backend:app --reload --port 8001
 ```
 
-**Start Frontend:**
-```bash
-cd interface_frontend
-python -m http.server 8080
-```
+## Documentation
 
-**Access:** `http://localhost:8080`
+### Interface-Specific Docs
 
-### Adding New Commands
+- [Framework Quick Reference](FRAMEWORK_QUICK_REFERENCE.md) - Command framework guide
+- [Changelog](CHANGELOG.md) - Version history
 
-See [Backend Documentation](interface_backend/README.md#adding-new-commands) for details.
+### Main Documentation
 
-### Frontend Customization
+See `docs/` in repository root:
+- [Getting Started](../docs/GETTING_STARTED.md)
+- [CLI Reference](../docs/CLI_REFERENCE.md)
+- [Architecture](../docs/ARCHITECTURE.md)
 
-See [Frontend Documentation](interface_frontend/README.md#customization) for theming and UI changes.
+## License
 
-## 📊 Example Workflows
-
-### Initialize and Explore
-
-```bash
-# Initialize with all defaults
-cns init --default
-
-# View topology
-cns query sites
-cns query cells
-
-# Check UE configuration
-cns query ues
-```
-
-### Tilt Optimization Study
-
-```bash
-# Query high-band cells
-cns query cells --band=H
-
-# Update all high-band cells
-cns update cells query --band=H --update-tilt-deg=12.0
-
-# Run simulation
-cns compute
-
-# Try different tilt
-cns update cells query --band=H --update-tilt-deg=10.0
-cns compute
-```
-
-### Site-Specific Configuration
-
-```bash
-# Query specific site
-cns query cells --site-name=CNS0001A
-
-# Update just that site
-cns update cells query --site-name=CNS0001A --update-tilt-deg=11.0
-
-# Update with wildcard
-cns update cells query --site-name=CNS000* --band=H --update-tilt-deg=11.5
-```
-
-## 🔮 Future Enhancements
-
-- [ ] State persistence with ArangoDB
-- [ ] Measurement report caching
-- [ ] Multi-network switching
-- [ ] Authentication for production networks
-- [ ] Result comparison and visualization
-- [ ] Batch operations from files
-
-## 📝 License
-
-Cognitive Network Solutions Inc. - Internal Use
-
----
-
-**Need help?** 
-- CLI Commands: [Frontend README](interface_frontend/README.md)
-- Backend Development: [Backend README](interface_backend/README.md)
-- Check logs: `docker compose logs -f`
+See main repository LICENSE file.

@@ -20,11 +20,11 @@ services:
     stdin_open: true
 
   # Simulation Engine - Core RF Simulation
-  smartran-studio-engine:
+  smartran-studio-sim-engine:
     build:
       context: ./smartran-studio-engine
       dockerfile: Dockerfile
-    container_name: smartran-studio-engine
+    container_name: smartran-studio-sim-engine
     deploy:
       resources:
         reservations:
@@ -60,7 +60,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - SIONNA_API_URL=http://smartran-studio-engine:8000
+      - SIONNA_API_URL=http://smartran-studio-sim-engine:8000
       - ARANGO_HOST=http://smartran-studio-arangodb:8529
       - ARANGO_USERNAME=root
       - ARANGO_PASSWORD=smartran-studio_dev_password

@@ -1,106 +1,200 @@
-# CNS ArangoDB - Data Persistence Layer
+# Database - ArangoDB
 
-ArangoDB instance for CNS protostack data persistence, caching, and state management.
+Persistent storage for SmartRAN Studio simulation state and configurations.
 
-## Quick Start
+## Technology
 
-### 1. Start ArangoDB
-```bash
-docker compose up -d
+**ArangoDB 3.11** - Multi-model NoSQL database
+
+## Purpose
+
+Stores:
+- Simulation configurations (save/load)
+- Measurement snapshots (compute results)
+- Session state (current initialization)
+- Run metadata
+
+## Collections
+
+### `session_cache`
+
+Current simulation state:
+- Single document with key `current_init`
+- Stores active initialization parameters
+- Overwritten on each init
+
+### `saved_configs`
+
+User-saved simulation configurations:
+- Named snapshots of full simulation state
+- Includes init params, cell configs, UE distribution
+- Restorable via `srs config load`
+
+**Document Structure**:
+```json
+{
+  "_key": "baseline",
+  "config_name": "baseline",
+  "description": "Baseline configuration",
+  "init_config": {...},
+  "cells_state": [...],
+  "ues_state": {...},
+  "topology": {...},
+  "metadata": {
+    "created_at": "2025-11-18T10:30:00Z",
+    "num_sites": 10,
+    "num_cells": 60,
+    "num_ues": 30000
+  }
+}
 ```
 
-### 2. Access Web UI
-- URL: http://localhost:8529
+### `sim_runs`
+
+Simulation compute run metadata:
+- Snapshot ID, name, timestamp
+- Run parameters
+- Statistics
+
+### `sim_reports`
+
+RSRP measurement data:
+- Full measurement reports
+- UE-cell RSRP values
+- Large documents (can be multi-MB)
+
+## Access
+
+### Web UI
+
+http://localhost:8529
+
+**Credentials**:
 - Username: `root`
-- Password: `cns_dev_password`
+- Password: `smartran-studio_dev_password`
 
-### 3. Internal Docker Network Access
-From other CNS services (Sionna, Interface):
-```
-http://cns-arangodb:8529
-```
-
-## Configuration
-
-### Default Credentials
-- **Root Password**: `cns_dev_password`
-- **Auth Enabled**: Yes (`ARANGO_NO_AUTH=0`)
-
-### To Disable Auth (Testing Only)
-Edit `compose.yaml`:
-```yaml
-environment:
-  - ARANGO_NO_AUTH=1  # Disables authentication
-```
-
-## Data Persistence
-
-Data is stored in Docker volumes:
-- `cns_arango_data` - Database files
-- `cns_arango_apps` - Application data
-
-Data persists between container restarts.
-
-## Management Commands
+### API
 
 ```bash
-# Start service
-docker compose up -d
+# List databases
+curl http://localhost:8529/_api/database
 
-# Stop service (keeps data)
-docker compose down
-
-# View logs
-docker compose logs -f
-
-# Stop and remove all data
-docker compose down -v  # ⚠️ Deletes all data!
-
-# Restart service
-docker compose restart
+# Query collection
+curl -u root:smartran-studio_dev_password \
+  http://localhost:8529/_db/smartran-studio_db/_api/document/saved_configs
 ```
 
-## Network Integration
+## Docker Configuration
 
-This service joins the `cns-network` Docker network, allowing:
-- CNS Sionna Sim → ArangoDB (internal communication)
-- CNS Interface → ArangoDB (internal communication)
-- Host → ArangoDB (via localhost:8529)
+From `docker-compose.yaml`:
 
-## Future Integration
+```yaml
+smartran-studio-arangodb:
+  image: arangodb:3.11
+  container_name: smartran-studio-arangodb
+  ports:
+    - "8529:8529"
+  volumes:
+    - arango_data:/var/lib/arangodb3
+    - arango_apps:/var/lib/arangodb3-apps
+  environment:
+    - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password
+    - ARANGO_NO_AUTH=0
+```
 
-This database will support:
-1. **Simulation State Persistence** - Save/load network topologies
-2. **Measurement Report Caching** - Store compute results for re-analysis
-3. **Scenario Management** - Version and compare different network configs
-4. **ML Training Data** - Persistent storage for learning pipelines
+## Volumes
 
-## Python Client Example
+- `arango_data` - Database files
+- `arango_apps` - Foxx apps
+
+Persistent across container restarts.
+
+## Python Client
+
+Both backend and sim-engine use `python-arango`:
 
 ```python
 from arango import ArangoClient
 
-# Initialize client
-client = ArangoClient(hosts='http://localhost:8529')
+client = ArangoClient(hosts='http://smartran-studio-arangodb:8529')
+db = client.db('smartran-studio_db', username='root', password='...')
 
-# Connect to database
-db = client.db('_system', username='root', password='cns_dev_password')
+# Query
+configs = db.collection('saved_configs').all()
 
-# Create CNS database
-if not db.has_database('cns_data'):
-    db.create_database('cns_data')
-
-# Use CNS database
-cns_db = client.db('cns_data', username='root', password='cns_dev_password')
+# Insert
+db.collection('saved_configs').insert({'_key': 'test', ...})
 ```
 
-## Port Information
+## Testing Connection
 
-- **8529** - HTTP API and Web UI (exposed to host)
-- Internal Docker network communication on same port
+```bash
+cd interface_db
+python test_connection.py
+```
 
-## Version
+## Backup
 
-- **ArangoDB**: 3.11 (official image)
-- **Docker Compose**: 3.8
+### Export Database
 
+```bash
+docker exec smartran-studio-arangodb arangodump \
+  --server.database smartran-studio_db \
+  --output-directory /backup
+
+docker cp smartran-studio-arangodb:/backup ./backup
+```
+
+### Restore Database
+
+```bash
+docker cp ./backup smartran-studio-arangodb:/backup
+
+docker exec smartran-studio-arangodb arangorestore \
+  --server.database smartran-studio_db \
+  --input-directory /backup
+```
+
+## Production Recommendations
+
+1. **Change default password** in `docker-compose.yaml`
+2. **Enable authentication** (remove `ARANGO_NO_AUTH` or set to 1)
+3. **Configure backups** (regular dumps)
+4. **Use volumes** on dedicated storage
+5. **Monitor performance** (built-in web UI metrics)
+6. **Secure network** access (firewall rules)
+
+## Troubleshooting
+
+### Cannot Connect
+
+Check container is running:
+```bash
+docker ps | grep arangodb
+```
+
+Check logs:
+```bash
+docker logs smartran-studio-arangodb
+```
+
+### Permission Errors
+
+Ensure volumes have correct ownership:
+```bash
+docker-compose down
+docker volume rm smartran_arango_data smartran_arango_apps
+docker-compose up -d
+```
+
+### Database Full
+
+Clean old snapshots:
+```bash
+srs snapshot list
+srs snapshot delete <old-snapshot-id>
+```
+
+## License
+
+See main repository LICENSE file.

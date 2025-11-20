@@ -9,8 +9,8 @@ networks:
     
     # ============================================================
     # INTERNAL DOCKER NETWORK (Recommended - fastest)
-    # Use when both backend and engine are on smartran-studio-network
-    api_url: "http://smartran-studio-engine:8000"
+    # Use when both backend and sim-engine are on smartran-studio-network
+    api_url: "http://smartran-studio-sim-engine:8000"
     # ============================================================
     
     # OTHER OPTIONS (uncomment if needed):

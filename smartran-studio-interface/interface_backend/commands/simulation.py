@@ -15,10 +15,10 @@ from framework import command, CommandResponse, ResponseType, ArgumentParser, Co
 @command(
     name="sim compute",
     description="Run simulation compute to generate RSRP measurements",
-    usage="cns sim compute --name=<name> [options]",
+    usage="srs sim compute --name=<name> [options]",
     long_description="""Run simulation compute to generate RSRP measurements
 
-Usage: cns sim compute --name=<name> [options]
+Usage: srs sim compute --name=<name> [options]
 
 Required:
   --name=<name>           Snapshot name (required, for easy identification)
@@ -45,9 +45,9 @@ Output:
   - Completion timestamp
 
 Examples:
-  cns sim compute --name="baseline-run"
-  cns sim compute --name="optimized-tilts" --threshold=-110
-  cns sim compute --name="test-v2" --label-mode=idx
+  srs sim compute --name="baseline-run"
+  srs sim compute --name="optimized-tilts" --threshold=-110
+  srs sim compute --name="test-v2" --label-mode=idx
 """,
     response_type=ResponseType.SUCCESS
 )
@@ -79,7 +79,7 @@ async def cmd_compute(args: List[str]) -> CommandResponse:
     # Validate required name parameter
     if not parsed_args.name:
         return CommandResponse(
-            content="❌ Error: Snapshot name is required\n\nUsage: cns sim compute --name=<name>\n\nExample: cns sim compute --name=\"baseline-run\"",
+            content="❌ Error: Snapshot name is required\n\nUsage: srs sim compute --name=<name>\n\nExample: srs sim compute --name=\"baseline-run\"",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -137,8 +137,8 @@ async def cmd_compute(args: List[str]) -> CommandResponse:
   Reports Generated:       {num_reports:,}
 
 View Snapshot:
-  • cns snapshot get {run_id}
-  • cns snapshot list
+  • srs snapshot get {run_id}
+  • srs snapshot list
 
 ✓ Measurement data stored in ArangoDB
 """
@@ -158,10 +158,10 @@ View Snapshot:
 @command(
     name="drop ues",
     description="Drop or redrop User Equipment (UEs) in simulation",
-    usage="cns drop ues <count> [options]",
+    usage="srs drop ues <count> [options]",
     long_description="""Drop or redrop User Equipment (UEs) in the simulation
 
-Usage: cns drop ues <count> [options]
+Usage: srs drop ues <count> [options]
 
 Arguments:
   <count>                Number of UEs to drop (required)
@@ -182,10 +182,10 @@ Description:
   Note: Dropping UEs invalidates previous compute results.
 
 Examples:
-  cns drop ues 50000                        # Drop 50K UEs with defaults
-  cns drop ues 50000 --layout=box --box-pad=300  # Custom box padding
-  cns drop ues 20000 --layout=disk --radius=1000 # Disk layout
-  cns drop ues 30000 --height=1.8 --seed=42      # Custom height and seed
+  srs drop ues 50000                        # Drop 50K UEs with defaults
+  srs drop ues 50000 --layout=box --box-pad=300  # Custom box padding
+  srs drop ues 20000 --layout=disk --radius=1000 # Disk layout
+  srs drop ues 30000 --height=1.8 --seed=42      # Custom height and seed
 """,
     response_type=ResponseType.SUCCESS
 )
@@ -211,7 +211,7 @@ async def cmd_drop_ues(args: List[str]) -> CommandResponse:
     # Validate UE count
     if not positional_args:
         return CommandResponse(
-            content="❌ Error: Number of UEs required\n\nUsage: cns drop ues <count> [params]\n\nUse --help for more information.",
+            content="❌ Error: Number of UEs required\n\nUsage: srs drop ues <count> [params]\n\nUse --help for more information.",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -260,7 +260,7 @@ Drop Parameters:
             content += f"  {key:<15} {value}\n"
         
         content += "\n⚠️ Note: Previous compute results are now invalid."
-        content += "\nRun 'cns sim compute' to generate new RSRP data."
+        content += "\nRun 'srs sim compute' to generate new RSRP data."
         
         return CommandResponse(
             content=content,
@@ -278,13 +278,13 @@ Drop Parameters:
 @command(
     name="snapshot list",
     description="List all measurement snapshots stored in ArangoDB",
-    usage="cns snapshot list [options]",
+    usage="srs snapshot list [options]",
     long_description="""List all measurement snapshots stored in ArangoDB
 
 A snapshot is a saved set of measurement reports from a compute operation.
 Each snapshot captures the complete network state at that point in time.
 
-Usage: cns snapshot list [options]
+Usage: srs snapshot list [options]
 
 Options:
   --limit=<n>         Maximum number of snapshots to show (default: 20)
@@ -293,9 +293,9 @@ Options:
   --order=<asc|desc>  Sort order (default: desc)
 
 Examples:
-  cns snapshot list                        # Show 20 most recent snapshots
-  cns snapshot list --limit=50             # Show 50 most recent snapshots
-  cns snapshot list --offset=20            # Skip first 20, show next batch
+  srs snapshot list                        # Show 20 most recent snapshots
+  srs snapshot list --limit=50             # Show 50 most recent snapshots
+  srs snapshot list --offset=20            # Skip first 20, show next batch
 """,
     arguments=[
         CommandArgument("limit", ArgumentType.INTEGER, 
@@ -333,7 +333,7 @@ async def cmd_snapshot_list(args: List[str]) -> CommandResponse:
         
         if not runs:
             return CommandResponse(
-                content="No measurement snapshots found.\n\nRun 'cns sim compute' to create your first snapshot.",
+                content="No measurement snapshots found.\n\nRun 'srs sim compute' to create your first snapshot.",
                 response_type=ResponseType.TEXT
             )
         
@@ -363,7 +363,7 @@ async def cmd_snapshot_list(args: List[str]) -> CommandResponse:
         )
         
         footer = f"\nShowing {offset+1} to {offset+len(runs)} of {total} snapshots"
-        footer += f"\n\nUse 'cns snapshot get <snapshot_id>' to see details"
+        footer += f"\n\nUse 'srs snapshot get <snapshot_id>' to see details"
         
         return CommandResponse(
             content=table,
@@ -382,19 +382,19 @@ async def cmd_snapshot_list(args: List[str]) -> CommandResponse:
 @command(
     name="snapshot get",
     description="Get detailed metadata for a specific measurement snapshot",
-    usage="cns snapshot get <snapshot_id>",
+    usage="srs snapshot get <snapshot_id>",
     long_description="""Get detailed metadata for a specific measurement snapshot
 
 A snapshot contains all measurement reports and network configuration
 from a compute operation, including cell tilts and init settings.
 
-Usage: cns snapshot get <snapshot_id>
+Usage: srs snapshot get <snapshot_id>
 
 Arguments:
   <snapshot_id>    The snapshot ID (timestamp format like "2025-11-06_00-05-22")
 
 Examples:
-  cns snapshot get 2025-11-06_00-05-22    # Get snapshot details
+  srs snapshot get 2025-11-06_00-05-22    # Get snapshot details
 """
 )
 async def cmd_snapshot_get(args: List[str]) -> CommandResponse:
@@ -402,7 +402,7 @@ async def cmd_snapshot_get(args: List[str]) -> CommandResponse:
     # Handle positional argument directly
     if not args or len(args) == 0:
         return CommandResponse(
-            content="❌ Error: snapshot_id required\n\nUsage: cns snapshot get <snapshot_id>\n\nExample: cns snapshot get 2025-11-06_04-47-22",
+            content="❌ Error: snapshot_id required\n\nUsage: srs snapshot get <snapshot_id>\n\nExample: srs snapshot get 2025-11-06_04-47-22",
             response_type=ResponseType.ERROR,
             exit_code=1
         )
@@ -480,18 +480,18 @@ This snapshot preserves the exact cell tilts and settings used.
 @command(
     name="snapshot delete",
     description="Delete a measurement snapshot and all its reports",
-    usage="cns snapshot delete <snapshot_id>",
+    usage="srs snapshot delete <snapshot_id>",
     long_description="""Delete a measurement snapshot and all its associated reports from ArangoDB
 
 Permanently removes a snapshot and all measurement reports stored with it.
 
-Usage: cns snapshot delete <snapshot_id>
+Usage: srs snapshot delete <snapshot_id>
 
 Arguments:
   <snapshot_id>    The snapshot ID to delete
 
 Examples:
-  cns snapshot delete 2025-11-06_00-05-22    # Delete snapshot and all reports
+  srs snapshot delete 2025-11-06_00-05-22    # Delete snapshot and all reports
 
 ⚠️ WARNING: This action cannot be undone!
 """
@@ -501,7 +501,7 @@ async def cmd_snapshot_delete(args: List[str]) -> CommandResponse:
     # Handle positional argument directly
     if not args or len(args) == 0:
         return CommandResponse(
-            content="❌ Error: snapshot_id required\n\nUsage: cns snapshot delete <snapshot_id>\n\nExample: cns snapshot delete 2025-11-06_04-47-22\n\n⚠️ WARNING: This action cannot be undone!",
+            content="❌ Error: snapshot_id required\n\nUsage: srs snapshot delete <snapshot_id>\n\nExample: srs snapshot delete 2025-11-06_04-47-22\n\n⚠️ WARNING: This action cannot be undone!",
             response_type=ResponseType.ERROR,
             exit_code=1
         )

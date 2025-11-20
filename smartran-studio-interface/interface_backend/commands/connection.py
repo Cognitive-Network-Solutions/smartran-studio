@@ -82,16 +82,16 @@ OTHER:
   clear                     Clear output display
 
 EXAMPLES:
-  cns connect sim           Connect to simulation
-  cns status                Show current status
-  cns init                  Initialize simulation (interactive)
-  cns query cells --band=H  Query high-band cells
-  cns update cell 0 --tilt=12.0  Update cell tilt
-  cns sim compute --name="baseline"  Run simulation and create snapshot
-  cns snapshot list         View all stored measurement snapshots
-  cns config save test1     Save current configuration as "test1"
+  srs connect sim           Connect to simulation
+  srs status                Show current status
+  srs init                  Initialize simulation (interactive)
+  srs query cells --band=H  Query high-band cells
+  srs update cell 0 --tilt=12.0  Update cell tilt
+  srs sim compute --name="baseline"  Run simulation and create snapshot
+  srs snapshot list         View all stored measurement snapshots
+  srs config save test1     Save current configuration as "test1"
   
-For detailed command help: cns <command> --help
+For detailed command help: srs <command> --help
 
 NOTE:
   • Snapshots = Measurement data from compute runs (read-only)
@@ -106,8 +106,8 @@ NOTE:
 @command(
     name="connect",
     description="Connect to a network",
-    usage="cns connect <network>",
-    examples=["cns connect sim"],
+    usage="srs connect <network>",
+    examples=["srs connect sim"],
     arguments=[
         CommandArgument("network", ArgumentType.STRING, required=True, 
                        help_text="Network name to connect to")
@@ -152,7 +152,7 @@ async def cmd_connect(args: Dict[str, Any]) -> CommandResponse:
   Description: {network_config.get('description', 'N/A')}
 
 You can now run commands in the context of this network.
-Try 'cns status' to check the connection.
+Try 'srs status' to check the connection.
 """
     return CommandResponse(
         content=content,
@@ -163,8 +163,8 @@ Try 'cns status' to check the connection.
 @command(
     name="networks",
     description="List all available networks",
-    usage="cns networks",
-    examples=["cns networks"],
+    usage="srs networks",
+    examples=["srs networks"],
     response_type=ResponseType.TEXT,
     category="Connection",
     requires_connection=False
@@ -181,7 +181,7 @@ async def cmd_networks(args: Dict[str, Any]) -> CommandResponse:
         output += f"     Type: {config.get('type', 'unknown'):<12} URL: {config['api_url']}\n\n"
     
     output += f"\nCurrent connection: {session.connected_network}\n"
-    output += "Use 'cns connect <network>' to switch networks"
+    output += "Use 'srs connect <network>' to switch networks"
     
     return CommandResponse(
         content=output,
@@ -192,8 +192,8 @@ async def cmd_networks(args: Dict[str, Any]) -> CommandResponse:
 @command(
     name="status",
     description="Check network connection status",
-    usage="cns status",
-    examples=["cns status"],
+    usage="srs status",
+    examples=["srs status"],
     response_type=ResponseType.SUCCESS,
     category="Connection"
 )

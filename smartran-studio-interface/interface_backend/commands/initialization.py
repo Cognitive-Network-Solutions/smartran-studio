@@ -156,16 +156,16 @@ Flags:
   --config <json>        Provide JSON configuration directly
   
 Examples:
-  cns init                                    # Interactive wizard
-  cns init --default                          # Quick start with defaults
-  cns init --config '{"n_sites": 20}'        # Custom config
+  srs init                                    # Interactive wizard
+  srs init --default                          # Quick start with defaults
+  srs init --config '{"n_sites": 20}'        # Custom config
   
 Output:
   - Number of sites, cells, and UEs created
   - Full configuration used
   - Success message
 
-See also: cns status (check simulation state after init)
+See also: srs status (check simulation state after init)
 """
     
     # Check if --default flag (initialize with all defaults)

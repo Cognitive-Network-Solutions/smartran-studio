@@ -14,12 +14,12 @@ const WELCOME_MESSAGE = {
 Connected to: SmartRAN Studio Simulation Engine
 
 Quick Start:
-  status                    - Check simulation status
-  init --default            - Initialize with all defaults
-  init                      - Interactive wizard (step-by-step)
-  query cells               - List all cells
-  query cells --band H      - Query high-band cells
-  help                      - Show all commands`
+  srs status                    - Check simulation status
+  srs init --default            - Initialize with all defaults
+  srs init                      - Interactive wizard (step-by-step)
+  srs query cells               - List all cells
+  srs query cells --band H      - Query high-band cells
+  srs help                      - Show all commands`
 }
 
 export default function CLI() {
@@ -105,12 +105,12 @@ export default function CLI() {
     }
 
     // Check if this is init without --default or --config -> launch widget
-    const normalizedCmd = command.toLowerCase().replace(/^(smartran|cns)\s+/, '')
+    const normalizedCmd = command.toLowerCase().replace(/^(srs|smartran|cns)\s+/, '')
     if (normalizedCmd === 'init' || normalizedCmd.startsWith('init ')) {
       if (!normalizedCmd.includes('--default') && !normalizedCmd.includes('--config')) {
         // Launch the interactive widget
         // Add to command history immediately (even if cancelled)
-        setCommandHistory(prev => [...prev, 'init'])
+        setCommandHistory(prev => [...prev, 'srs init'])
         setActiveWidget('init')
         setInput('')
         return
@@ -311,7 +311,7 @@ export default function CLI() {
     // Add command and formatted response to output
     // (command already added to history when widget launched)
     setOutputs(prev => [...prev, 
-      { type: 'command', content: `${'═'.repeat(80)}\n> init\n` },
+      { type: 'command', content: `${'═'.repeat(80)}\n> srs init\n` },
       { type: 'response', content: result }
     ])
   }

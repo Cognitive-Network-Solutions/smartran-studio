@@ -164,8 +164,8 @@ async def execute_command(req: CommandRequest) -> APICommandResponse:
     if not parts:
         return APICommandResponse(result="No command provided", exit_code=1)
     
-    # Remove 'smartran' or 'cns' prefix if present (legacy support)
-    if parts[0].lower() in ["smartran", "cns"]:
+    # Remove 'srs', 'smartran' or 'cns' prefix if present (legacy support)
+    if parts[0].lower() in ["srs", "smartran", "cns"]:
         parts = parts[1:]
     
     if not parts:

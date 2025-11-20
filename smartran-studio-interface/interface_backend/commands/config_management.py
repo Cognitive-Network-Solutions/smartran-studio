@@ -21,10 +21,10 @@ from framework import command, CommandResponse, ResponseType, ArgumentParser
 @command(
     name="config save",
     description="Save current simulation state as named configuration",
-    usage="cns config save <name> [--description '...']",
+    usage="srs config save <name> [--description '...']",
     long_description="""Save current simulation state as named configuration
 
-Usage: cns config save <name> [--description "description"]
+Usage: srs config save <name> [--description "description"]
 
 Arguments:
   <name>                Configuration name (required)
@@ -36,8 +36,8 @@ This command:
 3. Saves complete snapshot to ArangoDB
 
 Example:
-  cns config save baseline --description="Baseline configuration"
-  cns config save optimized-tilts --description="High band at 12°"
+  srs config save baseline --description="Baseline configuration"
+  srs config save optimized-tilts --description="High band at 12°"
 """,
     response_type=ResponseType.SUCCESS
 )
