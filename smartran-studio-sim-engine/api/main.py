@@ -1,3 +1,53 @@
+"""
+SmartRAN Studio Simulation Engine - Main API
+
+This module provides the FastAPI REST API interface for the SmartRAN Studio
+simulation engine. It exposes endpoints for:
+
+- Simulation initialization and configuration
+- Site and cell management (add, update, query)
+- UE (user equipment) dropping and management  
+- GPU-accelerated RSRP computation using NVIDIA Sionna
+- Measurement report generation and persistence
+- Simulation state management and querying
+
+The API is designed to work with the SmartRAN Studio CLI backend and frontend
+for interactive network simulation and analysis.
+
+Key Features:
+    - Concurrent request handling with GPU compute serialization
+    - Configuration locking for thread-safe state management
+    - Chunked computation for large-scale simulations (50k+ UEs)
+    - ArangoDB persistence for simulation runs and results
+    - Flexible cell querying and bulk update operations
+
+Architecture:
+    - FastAPI for async REST endpoints
+    - TensorFlow + Sionna for GPU-accelerated RF simulation
+    - ArangoDB for persistent state and result storage
+    - Pydantic models for request/response validation
+
+Threading Model:
+    - Async request handling on main thread
+    - Blocking TensorFlow compute offloaded to thread pool
+    - Locks to serialize GPU access and protect configuration
+
+Example Usage:
+    # Start the API server
+    uvicorn api.main:app --host 0.0.0.0 --port 8000
+    
+    # Initialize simulation (via curl)
+    curl -X POST http://localhost:8000/initialize \\
+         -H "Content-Type: application/json" \\
+         -d '{"n_sites": 10, "num_ue": 30000}'
+    
+    # Run compute
+    curl -X POST http://localhost:8000/measurement-reports?name=baseline
+
+Author: Cognitive Network Solutions Inc.
+License: Apache 2.0
+"""
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from simulation.engine import MultiCellSim

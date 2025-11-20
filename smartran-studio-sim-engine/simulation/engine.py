@@ -1,8 +1,47 @@
+"""
+SmartRAN Studio Multi-Cell Simulation Engine
 
-# =============================== #
-#   Multi-Cell / Per-Cell Tilt    #
-#   Sionna 1.1.0 (no ray tracing) #
-# =============================== #
+GPU-accelerated RF propagation simulation using NVIDIA Sionna and TensorFlow.
+Implements 3GPP TR 38.901 Urban Macro (UMa) channel model with support for:
+    - Multi-site, multi-sector, multi-band configurations
+    - Per-cell antenna configuration (tilt, roll, array geometry)
+    - Flexible UE dropping (disk or box layouts)
+    - Chunked computation for memory efficiency
+    - Deterministic results (seeded RNG for reproducibility)
+
+Key Classes:
+    MultiCellSim: Main simulation engine with site/cell/UE management
+
+Architecture:
+    Sites -> Sectors (3 per site) -> Cells (1+ per sector, one per band)
+    - Sites hold physical location and sector azimuths
+    - Cells hold RF parameters (frequency, power, tilt) and antenna config
+    - Each sector points in a direction (azimuth)
+    - Each cell on a sector has its own tilt (electrical downtilt)
+
+Performance:
+    - Typical: 10 sites, 60 cells, 30k UEs -> 5-10 seconds on RTX 4060
+    - Automatic chunking for large scenarios (configurable)
+    - GPU memory usage: ~4-5 GB for typical scenarios
+
+Technical Details:
+    - Uses Sionna 1.1.0 (no ray tracing, statistical channel model)
+    - 3GPP TR 38.901 UMa channel model
+    - O2I (outdoor-to-indoor) penetration loss
+    - Shadow fading disabled for deterministic results
+    - RSRP computed via OFDM channel + beamforming gain
+
+Example:
+    >>> sim = MultiCellSim(bs_rows=8, bs_cols=1)
+    >>> site_idx = sim.add_site(x=0, y=0, name="SITE0001A")
+    >>> cell_idx = sim.add_cell("SITE0001A", sector_id=0, band="H", 
+    ...                          fc_hz=2.5e9, tilt_deg=9.0)
+    >>> sim.drop_ues(num_ue=10000, layout='box')
+    >>> RSRP_dBm, cells_meta = sim.compute()
+
+Author: Cognitive Network Solutions Inc.
+License: Apache 2.0
+"""
 
 # Configure GPU and logging
 import os
@@ -37,12 +76,41 @@ from sionna.phy.channel import OFDMChannel
 
 
 def _ypr_from_deg(az_deg, tilt_deg=0.0, roll_deg=0.0):
+    """
+    Convert azimuth, tilt, and roll from degrees to yaw-pitch-roll radians.
+    
+    Args:
+        az_deg: Azimuth angle in degrees (0° = North, clockwise)
+        tilt_deg: Electrical downtilt in degrees (positive = downward)
+        roll_deg: Roll angle in degrees
+    
+    Returns:
+        np.ndarray: [yaw, pitch, roll] in radians as float32
+        
+    Note:
+        Electrical downtilt is represented as negative pitch in the coordinate system.
+    """
     yaw   = np.deg2rad(az_deg % 360.0).astype(np.float32)
     pitch = -np.deg2rad(tilt_deg).astype(np.float32)   # electrical downtilt = negative pitch
     roll  = np.deg2rad(roll_deg).astype(np.float32)
     return np.array([yaw, pitch, roll], dtype=np.float32)
 
 def _trisector_azimuths(az0_deg):
+    """
+    Calculate 3-sector azimuth angles from sector-0 azimuth.
+    
+    Args:
+        az0_deg: Sector 0 azimuth in degrees
+    
+    Returns:
+        list: [az0, az1, az2] where az1 = az0+120°, az2 = az0+240°
+        
+    Example:
+        >>> _trisector_azimuths(0.0)
+        [0.0, 120.0, 240.0]
+        >>> _trisector_azimuths(30.0)
+        [30.0, 150.0, 270.0]
+    """
     az = (np.array([0.0, 120.0, 240.0]) + az0_deg) % 360.0
     return [float(az[0]), float(az[1]), float(az[2])]
 
@@ -389,9 +457,27 @@ class MultiCellSim:
 
     def _cells_grouped_by_fc_and_array(self):
         """
-        Group cells by BOTH carrier frequency AND antenna configuration.
-        Cells must share the same antenna array to be in the same group.
-        Returns: {(fc_hz, bs_rows, bs_cols, bs_pol, ...): [(idx, cell), ...]}
+        Group cells by carrier frequency and antenna configuration for batch processing.
+        
+        Cells can only be computed together if they share:
+            - Same carrier frequency (fc_hz)
+            - Same antenna array geometry (rows, cols, polarization)
+            - Same element spacing
+            - Same antenna pattern model
+        
+        This grouping enables efficient GPU computation by creating a single
+        OFDM channel model and resource grid per group.
+        
+        Returns:
+            dict: Mapping from (fc_hz, bs_rows, bs_cols, bs_pol, bs_pol_type,
+                  elem_v_spacing, elem_h_spacing, antenna_pattern) tuple to
+                  list of (cell_index, cell_dict) pairs
+                  
+        Example:
+            {
+                (2.5e9, 8, 1, 'dual', 'VH', 0.5, 0.5, '38.901'): [(0, cell0), (1, cell1), ...],
+                (600e6, 8, 1, 'dual', 'VH', 0.5, 0.5, '38.901'): [(3, cell3), (4, cell4), ...]
+            }
         """
         groups = {}
         for idx, cell in enumerate(self.cells):

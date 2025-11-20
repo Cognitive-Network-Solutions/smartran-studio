@@ -147,12 +147,14 @@ smartran-studio-sim-engine/
 **Collections**:
 - `session_cache` - Current simulation state
 - `saved_configs` - User-saved configurations
-- `sim_runs` - Simulation run metadata
-- `sim_reports` - RSRP measurement snapshots
+- `sim_runs` - Simulation run metadata (one per compute run)
+- `sim_reports` - Per-UE RSRP measurement reports (linked to sim_runs)
 
 **Container**: `smartran-studio-arangodb`
 - Port: 8529 (Web UI + API)
 - Volumes: Persistent data storage
+
+**Schema Documentation**: See **[Database Schema Reference](DATABASE_SCHEMA.md)** for complete schema details, query examples, and data extraction guides.
 
 ## Network Architecture
 

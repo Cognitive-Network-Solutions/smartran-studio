@@ -87,12 +87,34 @@ srs sim compute --name="baseline"
 
 This computes RSRP (Reference Signal Received Power) for all UE-cell pairs and saves the results as a snapshot.
 
+### 8. Access Simulation Results
+
+View your results in the database:
+
+```bash
+# Open ArangoDB Web UI in your browser
+http://localhost:8529
+
+# Login credentials (default dev environment):
+Username: root
+Password: smartran-studio_dev_password
+Database: smartran-studio_db
+```
+
+Navigate to "Collections" → "sim_runs" to see all simulation runs, or "sim_reports" for detailed per-UE measurements.
+
+**For data extraction and analysis**, see **[Database Schema Reference](DATABASE_SCHEMA.md)** which includes:
+- Complete schema documentation
+- AQL query examples (list runs, extract UE reports, statistics)
+- Python access examples with pandas
+- CSV/JSON export strategies
+
 ## Next Steps
 
-- **CLI Reference**: See `docs/CLI_REFERENCE.md` for all available commands
-- **API Documentation**: See `docs/API_REFERENCE.md` for direct API access
-- **Architecture**: See `docs/ARCHITECTURE.md` to understand the system design
-- **Development**: See `docs/DEVELOPMENT.md` for development setup
+- **[CLI Reference](CLI_REFERENCE.md)** - All available commands
+- **[Database Schema](DATABASE_SCHEMA.md)** - Extract and analyze simulation results
+- **[Architecture](ARCHITECTURE.md)** - Understand the system design
+- **[Development](DEVELOPMENT.md)** - Container-first development guide
 
 ## Stopping Services
 

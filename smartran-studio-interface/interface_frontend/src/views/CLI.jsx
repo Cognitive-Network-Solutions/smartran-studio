@@ -86,6 +86,19 @@ export default function CLI() {
     sessionStorage.setItem('smartran-cli-history', JSON.stringify(commandHistory))
   }, [commandHistory])
 
+  /**
+   * Handle command submission from input field.
+   * 
+   * Processes user input commands, handles special cases (clear, init wizard),
+   * executes commands via backend API, and displays results.
+   * 
+   * Special Handling:
+   * - "clear": Resets output display and exits wizard mode
+   * - "srs init" (without flags): Launches interactive init widget
+   * - Wizard mode: Empty input uses default values
+   * 
+   * @param {Event} e - Form submit event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -217,6 +230,17 @@ export default function CLI() {
     }
   }
 
+  /**
+   * Navigate through command history.
+   * 
+   * Implements bash-like history navigation:
+   * - UP arrow (-1): Navigate to older commands
+   * - DOWN arrow (+1): Navigate to newer commands
+   * - Stops at oldest command (no wrap-around)
+   * - Returns to empty input when reaching newest
+   * 
+   * @param {number} direction - Navigation direction: -1 for up/back, +1 for down/forward
+   */
   const navigateHistory = (direction) => {
     if (commandHistory.length === 0) return
     
@@ -254,6 +278,24 @@ export default function CLI() {
     }
   }
 
+  /**
+   * Handle Tab key completion with multi-strategy matching.
+   * 
+   * Completion Strategies (applied in order):
+   * 1. Exact prefix match: "srs q" matches "srs query cells"
+   * 2. Word boundary match: "cells" matches "srs query cells"
+   * 3. Partial match: "cel" matches "srs query cells"
+   * 
+   * Multiple Matches:
+   * - First press: Shows first match
+   * - Subsequent presses: Cycles through all matches
+   * - Suggestions built from unique command history (most recent first)
+   * 
+   * Implementation:
+   * - Deduplicates history to avoid suggesting same command multiple times
+   * - Case-insensitive matching for better UX
+   * - Preserves tab index for cycling
+   */
   const handleTabCompletion = () => {
     const currentInput = input.trim()
     
@@ -304,6 +346,16 @@ export default function CLI() {
     }
   }
 
+  /**
+   * Handle successful completion of interactive widget (e.g., init wizard).
+   * 
+   * Closes the widget, exits wizard mode, and displays the command result
+   * in the CLI output. The command itself was already added to history when
+   * the widget was launched.
+   * 
+   * @param {Object} result - API response from widget submission
+   * @param {Object} config - Configuration object used in the widget
+   */
   const handleWidgetComplete = (result, config) => {
     setActiveWidget(null)
     setIsWizardMode(false)
@@ -316,6 +368,12 @@ export default function CLI() {
     ])
   }
 
+  /**
+   * Handle cancellation of interactive widget.
+   * 
+   * Closes the widget, exits wizard mode, and displays a cancellation
+   * message in the CLI output. No command is executed.
+   */
   const handleWidgetCancel = () => {
     setActiveWidget(null)
     setIsWizardMode(false)

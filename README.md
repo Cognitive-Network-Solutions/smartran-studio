@@ -124,6 +124,7 @@ docker-compose down
 - **[Getting Started](docs/GETTING_STARTED.md)** - Complete setup guide
 - **[CLI Reference](docs/CLI_REFERENCE.md)** - All available commands
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
+- **[Database Schema](docs/DATABASE_SCHEMA.md)** - ArangoDB schema and data extraction guide
 - **[Development](docs/DEVELOPMENT.md)** - Container-first development guide
 
 ## 🎯 Use Cases
