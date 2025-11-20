@@ -23,12 +23,33 @@ class SimStateManager:
                  username: str = None,
                  password: str = None,
                  database: str = None):
-        """Initialize ArangoDB client (reads from env vars if not provided)"""
-        # Read from environment variables (injected by Docker Compose)
-        host = host or os.getenv('ARANGO_HOST', 'http://smartran-studio-arangodb:8529')
-        username = username or os.getenv('ARANGO_USERNAME', 'root')
-        password = password or os.getenv('ARANGO_PASSWORD', 'smartran-studio_dev_password')
-        database = database or os.getenv('ARANGO_DATABASE', 'smartran-studio_db')
+        """
+        Initialize ArangoDB client.
+        
+        All parameters default to None and MUST be provided via environment variables
+        when not explicitly passed. This ensures no credentials are hardcoded.
+        
+        Required Environment Variables (set by Docker Compose):
+            ARANGO_HOST: Database host URL
+            ARANGO_USERNAME: Database username
+            ARANGO_PASSWORD: Database password (REQUIRED - no default)
+            ARANGO_DATABASE: Database name
+        """
+        # Read from environment variables (REQUIRED - injected by Docker Compose)
+        host = host or os.getenv('ARANGO_HOST')
+        username = username or os.getenv('ARANGO_USERNAME')
+        password = password or os.getenv('ARANGO_PASSWORD')
+        database = database or os.getenv('ARANGO_DATABASE')
+        
+        # Validate required credentials are provided
+        if not host:
+            raise ValueError("ARANGO_HOST environment variable is required")
+        if not username:
+            raise ValueError("ARANGO_USERNAME environment variable is required")
+        if not password:
+            raise ValueError("ARANGO_PASSWORD environment variable is required")
+        if not database:
+            raise ValueError("ARANGO_DATABASE environment variable is required")
         self.client = ArangoClient(hosts=host)
         
         # Connect to _system database first to check/create our database

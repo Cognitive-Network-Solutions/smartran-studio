@@ -10,11 +10,14 @@ Key Features:
     - Environment variable configuration for Docker deployment
     - Connection pooling via python-arango client
 
-Environment Variables:
-    ARANGO_HOST: Database host URL (default: http://localhost:8529)
-    ARANGO_USERNAME: Database username (default: root)
-    ARANGO_PASSWORD: Database password (default: empty string)
-    ARANGO_DATABASE: Database name (default: smartran-studio_db)
+Environment Variables (REQUIRED - no defaults):
+    ARANGO_HOST: Database host URL
+    ARANGO_USERNAME: Database username
+    ARANGO_PASSWORD: Database password
+    ARANGO_DATABASE: Database name
+
+All credentials MUST be provided via environment variables (set by Docker Compose).
+No defaults are provided to ensure users explicitly configure their deployment.
 
 Usage:
     >>> from db.arango_client import init_arango
@@ -32,11 +35,22 @@ from arango import ArangoClient
 
 logger = logging.getLogger(__name__)
 
-# Read configuration from environment (set by Docker Compose)
-ARANGO_HOST = os.getenv("ARANGO_HOST", "http://localhost:8529")
-ARANGO_USERNAME = os.getenv("ARANGO_USERNAME", "root")
-ARANGO_PASSWORD = os.getenv("ARANGO_PASSWORD", "")
-ARANGO_DATABASE = os.getenv("ARANGO_DATABASE", "smartran-studio_db")
+# Read configuration from environment (REQUIRED - set by Docker Compose)
+# No defaults provided - all values must come from environment variables
+ARANGO_HOST = os.getenv("ARANGO_HOST")
+ARANGO_USERNAME = os.getenv("ARANGO_USERNAME")
+ARANGO_PASSWORD = os.getenv("ARANGO_PASSWORD")
+ARANGO_DATABASE = os.getenv("ARANGO_DATABASE")
+
+# Validate required environment variables
+if not ARANGO_HOST:
+    raise ValueError("ARANGO_HOST environment variable is required")
+if not ARANGO_USERNAME:
+    raise ValueError("ARANGO_USERNAME environment variable is required")
+if not ARANGO_PASSWORD:
+    raise ValueError("ARANGO_PASSWORD environment variable is required (set in compose.yaml)")
+if not ARANGO_DATABASE:
+    raise ValueError("ARANGO_DATABASE environment variable is required")
 
 # Global client instance
 client = ArangoClient(hosts=ARANGO_HOST)

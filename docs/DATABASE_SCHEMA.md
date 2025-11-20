@@ -4,6 +4,25 @@ SmartRAN Studio uses **ArangoDB** (multi-model NoSQL database) to persist simula
 
 ---
 
+## 📊 Looking for Usage Examples?
+
+**This document is a technical reference.** For practical workflow examples, see:
+
+👉 **[Data Analysis Guide](DATA_ANALYSIS_GUIDE.md)** - Complete end-to-end guide:
+- Running simulations and saving results
+- Extracting UE reports (REST API, AQL, Python)
+- Analysis examples (coverage, load balance, heatmaps)
+- Comparison between simulation runs
+- Ready-to-use Python scripts
+
+**Use this document for:**
+- Understanding the database structure
+- Writing custom AQL queries
+- Integrating with external tools
+- Database administration
+
+---
+
 ## Overview
 
 ### Database: `smartran-studio_db`

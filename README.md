@@ -66,6 +66,17 @@ SmartRAN Studio is a modern RAN simulation platform designed for network plannin
 docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
 ```
 
+### ⚠️ Security Note
+
+**The default credentials in `compose.yaml` are for LOCAL DEVELOPMENT ONLY.**
+
+Before deploying beyond your local machine:
+1. Open `compose.yaml`
+2. Change `ARANGO_ROOT_PASSWORD` to a strong, unique password
+3. Update the same password in all three services (`smartran-studio-arangodb`, `smartran-studio-sim-engine`, `backend`)
+
+See **[Configuration Guide](docs/CONFIGURATION.md)** for details.
+
 ### 1. Clone & Start
 
 ```bash
@@ -121,10 +132,17 @@ docker-compose down
 
 ## 📖 Documentation
 
+### Getting Started
 - **[Getting Started](docs/GETTING_STARTED.md)** - Complete setup guide
+- **[Configuration Guide](docs/CONFIGURATION.md)** - ⚠️ **Change default credentials** and customize deployment
+
+### Using SmartRAN Studio
 - **[CLI Reference](docs/CLI_REFERENCE.md)** - All available commands
+- **[Data Analysis Guide](docs/DATA_ANALYSIS_GUIDE.md)** - 📊 **Complete workflow**: compute → extract → analyze results
+
+### Technical Reference
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
-- **[Database Schema](docs/DATABASE_SCHEMA.md)** - ArangoDB schema and data extraction guide
+- **[Database Schema](docs/DATABASE_SCHEMA.md)** - ArangoDB schema and query reference
 - **[Development](docs/DEVELOPMENT.md)** - Container-first development guide
 
 ## 🎯 Use Cases

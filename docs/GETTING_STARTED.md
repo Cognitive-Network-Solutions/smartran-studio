@@ -87,9 +87,31 @@ srs sim compute --name="baseline"
 
 This computes RSRP (Reference Signal Received Power) for all UE-cell pairs and saves the results as a snapshot.
 
-### 8. Access Simulation Results
+**What happens during compute:**
+- GPU calculates RF propagation for all UE-cell pairs (~5-10 seconds)
+- Results saved to database with complete configuration snapshot
+- Unique run ID assigned (timestamp-based)
 
-View your results in the database:
+### 8. Extract and Analyze Results
+
+Now you're ready to analyze your simulation data!
+
+**Quick verification:**
+```bash
+# List all runs
+srs snapshot list
+```
+
+**For complete data extraction and analysis workflow**, see:
+
+👉 **[Data Analysis Guide](DATA_ANALYSIS_GUIDE.md)** - Complete guide covering:
+- How to extract UE reports from the database
+- Python scripts for data export (CSV, JSON)
+- Analysis examples (coverage, load balance, RSRP distribution)
+- Visualization examples (heatmaps, histograms)
+- Comparison between simulation runs
+
+**Access raw data in ArangoDB:**
 
 ```bash
 # Open ArangoDB Web UI in your browser
@@ -102,12 +124,6 @@ Database: smartran-studio_db
 ```
 
 Navigate to "Collections" → "sim_runs" to see all simulation runs, or "sim_reports" for detailed per-UE measurements.
-
-**For data extraction and analysis**, see **[Database Schema Reference](DATABASE_SCHEMA.md)** which includes:
-- Complete schema documentation
-- AQL query examples (list runs, extract UE reports, statistics)
-- Python access examples with pandas
-- CSV/JSON export strategies
 
 ## Next Steps
 

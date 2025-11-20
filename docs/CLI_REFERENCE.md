@@ -313,6 +313,9 @@ srs sim compute --name="baseline"
 4. Saves results to database as snapshot
 5. Returns snapshot ID and statistics
 
+**Next steps:** After running compute, extract and analyze your results.  
+See **[Data Analysis Guide](DATA_ANALYSIS_GUIDE.md)** for complete workflow from compute to analysis.
+
 **Performance**: Chunked computation allows large-scale simulations (tens of thousands of UEs) on consumer GPUs.
 
 ### `srs drop ues`

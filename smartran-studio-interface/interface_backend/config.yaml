@@ -8,17 +8,25 @@ networks:
     description: "Sionna-based RF simulation environment"
     
     # ============================================================
-    # INTERNAL DOCKER NETWORK (Recommended - fastest)
-    # Use when both backend and sim-engine are on smartran-studio-network
-    api_url: "http://smartran-studio-sim-engine:8000"
+    # API URL CONFIGURATION
     # ============================================================
+    # NOTE: The api_url below is a PLACEHOLDER and is ALWAYS overridden
+    # by the SIONNA_API_URL environment variable set in compose.yaml.
+    # 
+    # To change the API URL, edit the SIONNA_API_URL environment variable
+    # in your compose.yaml file, NOT this config file.
+    # ============================================================
+    api_url: "http://smartran-studio-sim-engine:8000"  # Placeholder - overridden by SIONNA_API_URL env var
     
-    # OTHER OPTIONS (uncomment if needed):
+    # EXAMPLES (for reference only - set these in compose.yaml as environment variables):
     # For Docker host network access:
-    # api_url: "http://host.docker.internal:8000"
+    #   SIONNA_API_URL: "http://host.docker.internal:8000"
     # 
     # For local development (backend outside Docker):
-    # api_url: "http://localhost:8000"
+    #   SIONNA_API_URL: "http://localhost:8000"
+    # 
+    # For custom service name:
+    #   SIONNA_API_URL: "http://my-custom-sim-engine:8000"
     
     enabled: true
     

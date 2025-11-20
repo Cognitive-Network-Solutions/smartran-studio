@@ -1,5 +1,19 @@
 version: '3.8'
 
+# ============================================================================
+# SMARTRAN STUDIO CONFIGURATION
+# ============================================================================
+# IMPORTANT: Customize these credentials for your deployment!
+#
+# SECURITY NOTE: The default password below is for DEVELOPMENT ONLY.
+# For production or public deployments, change:
+#   1. ARANGO_ROOT_PASSWORD (must match in all services)
+#   2. ARANGO_DATABASE (optional - change if you want a different DB name)
+#
+# No credentials are hardcoded in the application code - everything comes
+# from these environment variables.
+# ============================================================================
+
 services:
   # ArangoDB Service - State Persistence
   smartran-studio-arangodb:
@@ -11,7 +25,10 @@ services:
       - arango_data:/var/lib/arangodb3
       - arango_apps:/var/lib/arangodb3-apps
     environment:
-      - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password
+      # ========================================
+      # CUSTOMIZE THESE FOR YOUR DEPLOYMENT
+      # ========================================
+      - ARANGO_ROOT_PASSWORD=smartran-studio_dev_password  # CHANGE THIS IN PRODUCTION!
       - ARANGO_NO_AUTH=0
     networks:
       - smartran-studio-network
@@ -22,7 +39,7 @@ services:
   # Simulation Engine - Core RF Simulation
   smartran-studio-sim-engine:
     build:
-      context: ./smartran-studio-engine
+      context: ./smartran-studio-sim-engine
       dockerfile: Dockerfile
     container_name: smartran-studio-sim-engine
     deploy:
@@ -35,14 +52,18 @@ services:
     ports:
       - "8000:8000"
     environment:
+      # GPU Configuration
       - CUDA_VISIBLE_DEVICES=0
       - RAPIDS_NO_INITIALIZE=1
       - CUDF_SPILL=0
       - JUPYTER_ENABLE_LAB=yes
-      - ARANGO_HOST=http://smartran-studio-arangodb:8529
+      # ========================================
+      # Database Credentials (must match above!)
+      # ========================================
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529  # Service name from above
       - ARANGO_USERNAME=root
-      - ARANGO_PASSWORD=smartran-studio_dev_password
-      - ARANGO_DATABASE=smartran-studio_db
+      - ARANGO_PASSWORD=smartran-studio_dev_password  # Must match ARANGO_ROOT_PASSWORD above
+      - ARANGO_DATABASE=smartran-studio_db  # Database name (customize if desired)
     networks:
       - smartran-studio-network
     user: root
@@ -60,11 +81,17 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - SIONNA_API_URL=http://smartran-studio-sim-engine:8000
-      - ARANGO_HOST=http://smartran-studio-arangodb:8529
+      # ========================================
+      # API Routing (customize service name if changed above)
+      # ========================================
+      - SIONNA_API_URL=http://smartran-studio-sim-engine:8000  # Must match sim-engine service name
+      # ========================================
+      # Database Credentials (must match above!)
+      # ========================================
+      - ARANGO_HOST=http://smartran-studio-arangodb:8529  # Service name from above
       - ARANGO_USERNAME=root
-      - ARANGO_PASSWORD=smartran-studio_dev_password
-      - ARANGO_DATABASE=smartran-studio_db
+      - ARANGO_PASSWORD=smartran-studio_dev_password  # Must match ARANGO_ROOT_PASSWORD above
+      - ARANGO_DATABASE=smartran-studio_db  # Must match database name above
     networks:
       - smartran-studio-network
     volumes:

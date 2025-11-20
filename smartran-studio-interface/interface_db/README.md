@@ -14,7 +14,24 @@ Stores:
 - Session state (current initialization)
 - Run metadata
 
-## Collections
+---
+
+## 📖 Complete Documentation
+
+**For comprehensive database schema documentation, query examples, and data extraction guides, see:**
+
+👉 **[Database Schema Reference](../../docs/DATABASE_SCHEMA.md)**
+
+This includes:
+- Complete document structures for all collections
+- 20+ AQL query examples
+- Python access examples with pandas
+- Data export strategies (JSON, CSV)
+- Storage estimates and performance metrics
+
+---
+
+## Collections Overview
 
 ### `session_cache`
 
@@ -51,17 +68,23 @@ User-saved simulation configurations:
 
 ### `sim_runs`
 
-Simulation compute run metadata:
+Simulation compute run metadata (one document per run):
 - Snapshot ID, name, timestamp
-- Run parameters
-- Statistics
+- Complete initialization configuration
+- Full cell states snapshot at run time
+- Run parameters and statistics
+
+**See [Database Schema Reference](../../docs/DATABASE_SCHEMA.md#1-sim_runs-collection)** for complete document structure.
 
 ### `sim_reports`
 
-RSRP measurement data:
-- Full measurement reports
-- UE-cell RSRP values
-- Large documents (can be multi-MB)
+Per-UE RSRP measurement data (one document per UE per run):
+- UE coordinates (x, y)
+- Sparse RSRP readings (cell name → dBm)
+- Linked to `sim_runs` via `run_id`
+- Optimized storage (only cells above threshold)
+
+**See [Database Schema Reference](../../docs/DATABASE_SCHEMA.md#2-sim_reports-collection)** for complete document structure and query examples.
 
 ## Access
 
@@ -69,9 +92,12 @@ RSRP measurement data:
 
 http://localhost:8529
 
-**Credentials**:
+**Default Credentials (Development Only)**:
 - Username: `root`
 - Password: `smartran-studio_dev_password`
+
+⚠️ **Change these credentials for any deployment beyond local testing!**  
+See **[Configuration Guide](../../docs/CONFIGURATION.md)** for instructions.
 
 ### API
 
@@ -115,9 +141,15 @@ Both backend and sim-engine use `python-arango`:
 
 ```python
 from arango import ArangoClient
+import os
 
-client = ArangoClient(hosts='http://smartran-studio-arangodb:8529')
-db = client.db('smartran-studio_db', username='root', password='...')
+# Credentials come from environment variables (set in compose.yaml)
+client = ArangoClient(hosts=os.getenv('ARANGO_HOST'))
+db = client.db(
+    os.getenv('ARANGO_DATABASE'),
+    username=os.getenv('ARANGO_USERNAME'),
+    password=os.getenv('ARANGO_PASSWORD')
+)
 
 # Query
 configs = db.collection('saved_configs').all()
@@ -125,6 +157,9 @@ configs = db.collection('saved_configs').all()
 # Insert
 db.collection('saved_configs').insert({'_key': 'test', ...})
 ```
+
+For detailed query examples and data extraction patterns, see:  
+**[Database Schema Reference](../../docs/DATABASE_SCHEMA.md#python-access-examples)**
 
 ## Testing Connection
 
@@ -157,12 +192,16 @@ docker exec smartran-studio-arangodb arangorestore \
 
 ## Production Recommendations
 
-1. **Change default password** in `docker-compose.yaml`
-2. **Enable authentication** (remove `ARANGO_NO_AUTH` or set to 1)
-3. **Configure backups** (regular dumps)
+1. **Change default password** - See **[Configuration Guide](../../docs/CONFIGURATION.md)**
+2. **Enable authentication** (already enabled with `ARANGO_NO_AUTH=0`)
+3. **Configure backups** (regular dumps via `arangodump`)
 4. **Use volumes** on dedicated storage
-5. **Monitor performance** (built-in web UI metrics)
-6. **Secure network** access (firewall rules)
+5. **Monitor performance** (built-in web UI metrics at port 8529)
+6. **Secure network** access (firewall rules, don't expose 8529 publicly)
+
+For complete security best practices and credential management, see:
+- **[Configuration Guide](../../docs/CONFIGURATION.md)** - How to change passwords
+- **[Database Schema Reference](../../docs/DATABASE_SCHEMA.md)** - Backup strategies
 
 ## Troubleshooting
 
