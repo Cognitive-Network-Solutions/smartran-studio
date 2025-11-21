@@ -7,6 +7,12 @@ This product includes software developed by third parties and is provided under 
 
 ---
 
+## Branding
+
+The CNS logos (`cnsLogo_lightmode.png`, `cnsLogo_darkmode.png`) are © Cognitive Network Solutions Inc. 2025. All rights reserved. These logos are not licensed under the Apache 2.0 license.
+
+---
+
 ## Third-Party Software
 
 ### NVIDIA Sionna
@@ -139,5 +145,5 @@ For questions about licensing or attribution, please open an issue on the projec
 
 ---
 
-Last Updated: November 2024
+Last Updated: November 2025
 

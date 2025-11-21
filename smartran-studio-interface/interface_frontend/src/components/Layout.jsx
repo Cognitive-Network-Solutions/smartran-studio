@@ -44,7 +44,7 @@ export default function Layout({ children, activeView, onViewChange }) {
             className="h-8 w-auto" 
           />
           <div className="flex items-center gap-3">
-            <span className="text-sm font-bold tracking-wider" style={{ color: 'var(--color-accent)' }}>CNS</span>
+            <span className="text-lg font-semibold">SmartRAN Studio</span>
             <span className="text-gray-400">|</span>
             <h1 className="text-lg font-semibold">{viewTitles[activeView] || 'Interface'}</h1>
           </div>

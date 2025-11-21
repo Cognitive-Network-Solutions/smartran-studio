@@ -47,7 +47,7 @@ smartran-studio-sim-engine/
 The simulation engine runs as part of the main Docker Compose stack. From the repository root:
 
 ```bash
-docker-compose up -d smartran-studio-sim-engine
+docker compose up -d smartran-studio-sim-engine
 ```
 
 Access the API at: **http://localhost:8000**
@@ -182,14 +182,14 @@ Environment variables (set via Docker Compose):
 **Option 1: Rebuild Container** (for code changes)
 ```bash
 # From repository root
-docker-compose up --build -d smartran-studio-sim-engine
-docker-compose logs -f smartran-studio-sim-engine
+docker compose up --build -d smartran-studio-sim-engine
+docker compose logs -f smartran-studio-sim-engine
 ```
 
 **Option 2: Interactive Development** (attach to running container)
 ```bash
 # Start container
-docker-compose up -d smartran-studio-sim-engine
+docker compose up -d smartran-studio-sim-engine
 
 # Attach to container
 docker exec -it smartran-studio-sim-engine bash

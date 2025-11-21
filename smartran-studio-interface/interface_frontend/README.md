@@ -53,14 +53,14 @@ Frontend is served via Nginx in Docker:
 
 ```bash
 # From repository root
-docker-compose up -d frontend
+docker compose up -d frontend
 ```
 
 Access at: http://localhost:8080
 
 For code changes, rebuild:
 ```bash
-docker-compose up --build -d frontend
+docker compose up --build -d frontend
 ```
 
 ### Local Dev Server (Optional)

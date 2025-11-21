@@ -196,7 +196,7 @@ export default function CLI() {
       setOutputs(prev => prev.filter(o => o.type !== 'loading'))
       
       // Add error to output
-      const errorMessage = `❌ Error: ${error.message}\n\nTroubleshooting:\n  1. Check if the backend is running (port 8001)\n  2. Check if the simulation API is running (port 8000)\n  3. Verify Docker containers are up: docker ps\n\nQuick fix:\n  docker-compose up -d`
+      const errorMessage = `❌ Error: ${error.message}\n\nTroubleshooting:\n  1. Check if the backend is running (port 8001)\n  2. Check if the simulation API is running (port 8000)\n  3. Verify Docker containers are up: docker ps\n\nQuick fix:\n  docker compose up -d`
       setOutputs(prev => [...prev, { type: 'error', content: errorMessage }])
     } finally {
       setIsLoading(false)

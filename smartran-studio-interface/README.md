@@ -59,7 +59,7 @@ Persistent storage for:
 The interface runs as part of the main Docker Compose stack. From the repository root:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Then access the web UI at: **http://localhost:8080**

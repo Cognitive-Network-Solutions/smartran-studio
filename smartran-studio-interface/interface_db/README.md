@@ -221,9 +221,9 @@ docker logs smartran-studio-arangodb
 
 Ensure volumes have correct ownership:
 ```bash
-docker-compose down
+docker compose down
 docker volume rm smartran_arango_data smartran_arango_apps
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Database Full

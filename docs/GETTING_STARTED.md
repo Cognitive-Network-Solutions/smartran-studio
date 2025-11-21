@@ -32,7 +32,7 @@ cd smartran-studio
 From the root directory:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This starts 4 services:
@@ -135,12 +135,12 @@ Navigate to "Collections" → "sim_runs" to see all simulation runs, or "sim_rep
 ## Stopping Services
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 To remove volumes (database data):
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 

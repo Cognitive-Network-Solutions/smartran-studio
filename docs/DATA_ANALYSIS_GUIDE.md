@@ -898,6 +898,6 @@ for chunk in pd.read_csv('large_file.csv', chunksize=chunk_size):
 
 ---
 
-**Last Updated:** November 2024  
+**Last Updated:** November 2025  
 **Version:** 1.0
 

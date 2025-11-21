@@ -50,7 +50,7 @@ SmartRAN Studio is designed from the ground up for GPU acceleration:
 
 ```bash
 # From repository root
-docker-compose up -d
+docker compose up -d
 ```
 
 **What starts**:
@@ -68,10 +68,10 @@ Code is in: `smartran-studio-sim-engine/`
 ```bash
 # Make your changes to Python files
 # Rebuild and restart
-docker-compose up --build -d smartran-studio-sim-engine
+docker compose up --build -d smartran-studio-sim-engine
 
 # View logs
-docker-compose logs -f smartran-studio-sim-engine
+docker compose logs -f smartran-studio-sim-engine
 ```
 
 **No hot reload** - Container rebuild required for changes.
@@ -87,7 +87,7 @@ Code is in: `smartran-studio-interface/interface_backend/`
 # Just save - no rebuild needed
 
 # View logs to see reload
-docker-compose logs -f backend
+docker compose logs -f backend
 ```
 
 #### Frontend Code Changes
@@ -96,7 +96,7 @@ Code is in: `smartran-studio-interface/interface_frontend/`
 
 **Option 1: Rebuild container** (production build)
 ```bash
-docker-compose up --build -d frontend
+docker compose up --build -d frontend
 ```
 
 **Option 2: Local dev server** (faster iteration)
@@ -111,12 +111,12 @@ npm run dev
 
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f smartran-studio-sim-engine
-docker-compose logs -f backend
-docker-compose logs -f frontend
+docker compose logs -f smartran-studio-sim-engine
+docker compose logs -f backend
+docker compose logs -f frontend
 ```
 
 ### 4. Accessing Containers
@@ -213,7 +213,7 @@ docker exec -it smartran-studio-backend pytest tests/
 
 ```bash
 # Full stack must be running
-docker-compose up -d
+docker compose up -d
 
 # Run integration tests
 docker exec -it smartran-studio-backend pytest tests/integration/
@@ -244,7 +244,7 @@ docker exec -it smartran-studio-sim-engine nvidia-smi
 
 ```bash
 # Check logs
-docker-compose logs smartran-studio-sim-engine
+docker compose logs smartran-studio-sim-engine
 
 # Common issues:
 # - GPU driver mismatch
@@ -262,7 +262,7 @@ docker ps | grep arangodb
 docker exec -it smartran-studio-backend ping smartran-studio-arangodb
 
 # Check logs
-docker-compose logs smartran-studio-arangodb
+docker compose logs smartran-studio-arangodb
 ```
 
 ### Hot Reload Not Working
@@ -272,7 +272,7 @@ docker-compose logs smartran-studio-arangodb
 docker inspect smartran-studio-backend | grep Mounts -A 10
 
 # Restart backend
-docker-compose restart backend
+docker compose restart backend
 ```
 
 ## Building for Production
@@ -280,15 +280,15 @@ docker-compose restart backend
 ### Build All Images
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 ### Build Specific Service
 
 ```bash
-docker-compose build smartran-studio-sim-engine
-docker-compose build backend
-docker-compose build frontend
+docker compose build smartran-studio-sim-engine
+docker compose build backend
+docker compose build frontend
 ```
 
 ### Push to Registry
@@ -386,7 +386,7 @@ ports:
 Use BuildKit:
 ```bash
 export DOCKER_BUILDKIT=1
-docker-compose build
+docker compose build
 ```
 
 ## Resources

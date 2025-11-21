@@ -5,8 +5,8 @@ This script reads credentials from environment variables (as configured in compo
 Run after starting the ArangoDB container.
 
 Usage:
-    # With docker-compose environment variables
-    docker-compose exec backend python /path/to/test_connection.py
+    # With docker compose environment variables
+    docker compose exec backend python /path/to/test_connection.py
     
     # Or set environment variables manually
     export ARANGO_HOST=http://localhost:8529
@@ -30,7 +30,7 @@ ARANGO_DATABASE = os.getenv('ARANGO_DATABASE', 'smartran-studio_db')
 # Validate required environment variables
 if not ARANGO_USER:
     print("❌ Error: ARANGO_USERNAME environment variable is required")
-    print("Set it in your shell or run via docker-compose exec")
+    print("Set it in your shell or run via docker compose exec")
     sys.exit(1)
 
 if not ARANGO_PASSWORD:

@@ -840,7 +840,7 @@ FOR c IN COLLECTIONS()
 
 ---
 
-**Last Updated:** November 2024  
+**Last Updated:** November 2025  
 **Database Version:** ArangoDB 3.11+  
 **Schema Version:** 1.0
 

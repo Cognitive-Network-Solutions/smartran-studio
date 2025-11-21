@@ -53,7 +53,7 @@ interface_backend/
 
 ```bash
 # From repository root
-docker-compose up -d backend
+docker compose up -d backend
 ```
 
 Access API at: http://localhost:8001

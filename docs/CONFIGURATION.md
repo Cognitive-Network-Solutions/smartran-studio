@@ -247,7 +247,7 @@ nano compose.prod.yaml
 echo "compose.prod.yaml" >> .gitignore
 
 # 4. Deploy with production config
-docker-compose -f compose.prod.yaml up -d
+docker compose -f compose.prod.yaml up -d
 ```
 
 **compose.prod.yaml example:**
@@ -323,12 +323,12 @@ After making configuration changes, verify everything works:
 
 ```bash
 # 1. Restart services
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 
 # 2. Check logs for successful startup
-docker-compose logs smartran-studio-sim-engine | grep "Connected to ArangoDB"
-docker-compose logs backend | grep "Connected to database"
+docker compose logs smartran-studio-sim-engine | grep "Connected to ArangoDB"
+docker compose logs backend | grep "Connected to database"
 
 # 3. Test web interface
 # Open http://localhost:8080 and run:
@@ -350,6 +350,6 @@ srs status
 
 ---
 
-**Last Updated:** November 2024  
+**Last Updated:** November 2025  
 **Security Review:** Recommended before production deployment
 
