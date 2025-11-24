@@ -371,10 +371,20 @@ SmartRAN Studio is actively evolving. Planned capabilities include:
 
 Contributions are welcome! SmartRAN Studio follows container-first development:
 
-1. Fork the repository
-2. Create feature branch
-3. Make changes and test in Docker
-4. Submit pull request
+**Getting Started:**
+1. Check [open issues](https://github.com/Cognitive-Network-Solutions/smartran-studio/issues) for tasks to work on
+   - Look for `good first issue` labels - perfect for newcomers!
+   - Comment on the issue before starting work
+2. Fork the repository
+3. Create feature branch
+4. Make changes and test in Docker
+5. Submit pull request
+
+**See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines**, including:
+- Which areas are safe to contribute without deep RAN expertise
+- Which changes require maintainer discussion
+- Development setup and workflow
+- How to find and claim issues
 
 All development and testing happens in containers - no local GPU setup required for contributing to non-simulation components.
 

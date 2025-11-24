@@ -17,12 +17,17 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [Code of Conduct](#code-of-conduct)
 - [I Have a Question](#i-have-a-question)
 - [I Want To Contribute](#i-want-to-contribute)
-- [Reporting Bugs](#reporting-bugs)
-- [Suggesting Enhancements](#suggesting-enhancements)
-- [Your First Code Contribution](#your-first-code-contribution)
-- [Improving The Documentation](#improving-the-documentation)
+  - [Contribution Areas and Boundaries](#contribution-areas-and-boundaries)
+    - [✅ Areas that do **not** require RAN / Sionna domain expertise](#-areas-that-do-not-require-ran--sionna-domain-expertise)
+    - [⚠️ Changes that **require discussion** with maintainers](#️-changes-that-require-discussion-with-maintainers)
+    - [🔒 Decisions and elements that are **not open for change** via PR](#-decisions-and-elements-that-are-not-open-for-change-via-pr)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Your First Code Contribution](#your-first-code-contribution)
+    - [Finding Work to Contribute](#finding-work-to-contribute)
+  - [Improving The Documentation](#improving-the-documentation)
 - [Styleguides](#styleguides)
-- [Commit Messages](#commit-messages)
+  - [Commit Messages](#commit-messages)
 - [Join The Project Team](#join-the-project-team)
 
 
@@ -224,10 +229,65 @@ Enhancement suggestions are tracked as [GitHub issues](https://github.com/Cognit
 <!-- You might want to create an issue template for enhancement suggestions that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
 
 ### Your First Code Contribution
-<!-- TODO
-include Setup of env, IDE and typical getting started instructions?
 
--->
+#### Finding Work to Contribute
+
+The best place to start is our [GitHub Issues](https://github.com/Cognitive-Network-Solutions/smartran-studio/issues). We use labels to help you find work that matches your skill level and interests.
+
+**Key labels to look for:**
+- **`good first issue`** - Perfect for newcomers! Small, well-defined tasks that don't require deep codebase knowledge
+- **`help wanted`** - Community contributions especially welcome
+- **`enhancement`** - New features or improvements  
+- **`bug`** - Something that needs fixing
+- **`frontend`** / **`backend`** / **`analytics`** - Indicates which part of the codebase
+- **`epic`** - Large features broken into sub-issues
+
+Browse issues by label on GitHub to find work that interests you.
+
+**How to Get Started:**
+
+1. **Browse Issues**: Check [open issues](https://github.com/Cognitive-Network-Solutions/smartran-studio/issues) filtered by labels
+2. **Read the Description**: Each issue explains the problem, expected behavior, and acceptance criteria
+3. **Comment First**: Before starting work, comment on the issue saying you'd like to tackle it. This avoids duplicate effort and lets maintainers provide guidance.
+4. **Ask Questions**: If anything is unclear, ask in the issue comments. We're happy to provide more context!
+5. **Propose Your Approach**: For non-trivial issues, outline your implementation plan in a comment before starting (especially important for issues marked ⚠️ in contribution areas)
+
+**Development Setup:**
+
+SmartRAN Studio uses a container-first architecture, so you don't need to install complex GPU dependencies locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/Cognitive-Network-Solutions/smartran-studio.git
+cd smartran-studio
+
+# Start all services
+docker compose up -d
+
+# Access the application
+# Web UI: http://localhost:8080
+# Backend API: http://localhost:8001
+# Sim Engine API: http://localhost:8000
+```
+
+For detailed setup instructions, see [Getting Started](docs/GETTING_STARTED.md) and [Development Guide](docs/DEVELOPMENT.md).
+
+**Making Changes:**
+
+- Frontend work: Edit files in `smartran-studio-interface/interface_frontend/` (hot reload enabled)
+- Backend work: Edit files in `smartran-studio-interface/interface_backend/` (hot reload enabled)
+- Simulation engine: Changes require rebuild - see [Development Guide](docs/DEVELOPMENT.md)
+
+**Before Submitting a PR:**
+
+- Test your changes in the Docker environment
+- Make sure the application still runs (`docker compose up`)
+- Write clear commit messages
+- Reference the issue number in your PR description (e.g., "Fixes #42")
+
+**Questions?**
+
+If you're stuck or need clarification on an issue, just ask! Comment on the issue or open a new discussion. We're here to help contributors succeed.
 
 ### Improving The Documentation
 <!-- TODO
