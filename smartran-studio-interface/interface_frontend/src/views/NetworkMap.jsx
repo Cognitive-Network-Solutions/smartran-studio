@@ -742,35 +742,6 @@ export default function NetworkMap() {
         }}
       >
         <div className="space-y-6">
-          {/* Network Info Section */}
-          <div>
-            <h3
-              className="text-lg font-semibold mb-3"
-              style={{ color: "var(--color-ink)" }}
-            >
-              Network Map
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span style={{ color: "var(--color-muted)" }}>
-                  Total Cells:
-                </span>
-                <span className="font-semibold text-accent">
-                  {cells.length}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span style={{ color: "var(--color-muted)" }}>System:</span>
-                <span
-                  className="font-mono text-xs"
-                  style={{ color: "var(--color-text)" }}
-                >
-                  Cartesian (0,0)
-                </span>
-              </div>
-            </div>
-          </div>
-
           {/* Search & Filter Section */}
           <div>
             <h3
@@ -779,21 +750,59 @@ export default function NetworkMap() {
             >
               Search Cells
             </h3>
-            <input
-              type="text"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Enter cell name..."
-              className="w-full p-3 border rounded-2xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/30"
-            />
-            <div className="flex gap-2 mt-2">
+
+            <div className="relative">
+              {/* INPUT */}
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Enter cell or site name..."
+                className="w-full p-3 border rounded-2xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+
+              {searchText && (
+                <div
+                  className="absolute w-full max-h-60 mt-1 overflow-y-auto rounded-xl shadow-lg border bg-white z-50"
+                  style={{ borderColor: "var(--color-line)" }}
+                >
+                  {filteredCells.map((cell) => (
+                    <div
+                      key={cell.id}
+                      className="px-4 py-2 hover:bg-accent/10 cursor-pointer border-b transition-all"
+                      style={{ borderColor: "var(--color-line)" }}
+                      onClick={() => {
+                        setSelectedCell(cell);
+                        setSearchText("");
+                      }}
+                    >
+                      <div className="font-semibold text-gray-900">
+                        {cell.cell_name}
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        {cell.site_name} • {cell.band}-band • {cell.frequency}{" "}
+                        MHz
+                      </div>
+                    </div>
+                  ))}
+
+                  {filteredCells.length === 0 && (
+                    <div className="text-center py-3 text-sm text-gray-500">
+                      No results
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 mt-3">
               {["H", "L", "M"].map((band) => (
                 <button
                   key={band}
                   className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all border ${
                     bandFilter === band
                       ? "bg-accent text-white border-accent"
-                      : "bg-white text-gray-700 border-gray-200 hover:bg-accent/10"
+                      : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-accent/40"
                   }`}
                   onClick={() => setBandFilter(bandFilter === band ? "" : band)}
                 >
@@ -801,45 +810,21 @@ export default function NetworkMap() {
                 </button>
               ))}
             </div>
+
             <button
-              className="w-full mt-2 p-2 border rounded bg-gray-100 hover:bg-gray-200 text-sm"
+              className="w-full mt-3 py-2.5 text-sm font-semibold rounded-2xl transition-all border shadow-sm"
+              style={{
+                backgroundColor: "white",
+                borderColor: "var(--color-accent, #6b7280)",
+                color: "var(--color-accent, #374151)",
+              }}
               onClick={() => {
                 setSearchText("");
                 setBandFilter("");
               }}
             >
-              Clear Filters
+              Clear filters
             </button>
-
-            <div className="mt-3 max-h-56 overflow-y-auto border rounded-2xl shadow-sm p-3 bg-white">
-              {filteredCells.map((cell) => (
-                <div
-                  key={cell.id}
-                  className="group flex flex-col gap-1 p-2 cursor-pointer rounded-xl transition-all hover:bg-accent/10"
-                  onClick={() => {
-                    setSelectedCell(cell);
-                    // setHoveredCell(null);
-                  }}
-                >
-                  <span className="font-semibold text-base text-gray-800 group-hover:text-accent">
-                    {cell.cell_name}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    <span className="px-1.5 py-0.5 bg-gray-100 rounded-md mr-1">
-                      {cell.site_name}
-                    </span>
-                    <span className="px-2 py-0.5 border rounded-md text-accent font-medium">
-                      {cell.band}-band
-                    </span>
-                  </span>
-                </div>
-              ))}
-              {filteredCells.length === 0 && (
-                <div className="text-sm text-gray-500 py-2 text-center">
-                  No cells found
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Band Legend Section */}
