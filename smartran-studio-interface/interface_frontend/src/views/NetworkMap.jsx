@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-// import { getMapCells } from "../utils/api";
+import { getMapCells } from "../utils/api";
 
 /**
  * NetworkMap Component
@@ -9,6 +9,7 @@ export default function NetworkMap() {
   // State
   const [cells, setCells] = useState([]);
   const [selectedCell, setSelectedCell] = useState(null);
+  const [hoveredCell, setHoveredCell] = useState(null);
   const [tooltip, setTooltip] = useState({
     show: false,
     x: 0,
@@ -121,6 +122,14 @@ export default function NetworkMap() {
 
   const zoomOut = useCallback(() => {
     setScale((prev) => prev / 1.2);
+  }, []);
+
+  // Pan to specific cell (center it in viewport without changing zoom)
+  const panToCell = useCallback((cell) => {
+    if (!cell) return;
+    
+    // Center the cell in the viewport
+    setOffset({ x: -cell.x, y: -cell.y });
   }, []);
 
   // Draw canvas background (grid, axes, labels)
@@ -409,8 +418,9 @@ export default function NetworkMap() {
     path.setAttribute("class", "sector");
     path.setAttribute("data-cell", cell.cell_name);
 
-    const isSelected = selectedCell && cell.id === selectedCell.id;
-    const opacity = isSelected ? 0.85 : 0.7;
+    const isSelected = selectedCell && 
+      (cell.cell_idx === selectedCell.cell_idx || cell.cell_name === selectedCell.cell_name);
+    const opacity = isSelected ? 1.0 : 0.7;
 
     const hexToRgba = (hex, alpha) => {
       const r = parseInt(hex.slice(1, 3), 16);
@@ -420,8 +430,14 @@ export default function NetworkMap() {
     };
 
     path.setAttribute("fill", hexToRgba(color, opacity));
-    path.setAttribute("stroke", isSelected ? "#ffffff" : color);
-    path.setAttribute("stroke-width", isSelected ? 2 : 1);
+    path.setAttribute("stroke", isSelected ? "#FFD700" : color);
+    path.setAttribute("stroke-width", isSelected ? 4 : 1);
+    
+    // Add pulsing animation for selected cell
+    if (isSelected) {
+      path.style.filter = "drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))";
+      path.style.animation = "pulse 1.5s ease-in-out infinite";
+    }
 
     // Event listeners
     path.addEventListener("mouseenter", (e) => {
@@ -448,12 +464,6 @@ export default function NetworkMap() {
   };
 
   // Canvas interactions
-  const handleWheel = useCallback((e) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    setScale((prev) => Math.max(0.1, Math.min(10, prev * zoomFactor)));
-  }, []);
-
   const handleMouseDown = useCallback((e) => {
     setIsDragging(true);
     setLastMouse({ x: e.clientX, y: e.clientY });
@@ -515,6 +525,21 @@ export default function NetworkMap() {
 
   // Effects
 
+  // Attach wheel event listener with passive: false to allow preventDefault
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const wheelHandler = (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+      setScale((prev) => Math.max(0.1, Math.min(10, prev * zoomFactor)));
+    };
+
+    canvas.addEventListener("wheel", wheelHandler, { passive: false });
+    return () => canvas.removeEventListener("wheel", wheelHandler);
+  }, []);
+
   // Resize canvas on mount and window resize
   useEffect(() => {
     resizeCanvas();
@@ -527,99 +552,24 @@ export default function NetworkMap() {
     drawCanvas();
     drawSVG();
   }, [drawCanvas, drawSVG, scale, offset, cells, selectedCell]);
-  const mockCells = [
-    {
-      id: 1,
-      cell_name: "CELL001",
-      site_name: "SITE001",
-      band: "H",
-      x: 10,
-      y: 20,
-      azimuth: 90,
-      tilt: 5,
-      frequency: 2600,
-      antenna_rows: 2,
-      antenna_cols: 2,
-      antenna_pattern: "Omni",
-    },
-    {
-      id: 2,
-      cell_name: "CELL002",
-      site_name: "SITE002",
-      band: "L",
-      x: 15,
-      y: 25,
-      azimuth: 180,
-      tilt: 10,
-      frequency: 700,
-      antenna_rows: 4,
-      antenna_cols: 4,
-      antenna_pattern: "Directional",
-    },
-    {
-      id: 3,
-      cell_name: "CELL003",
-      site_name: "SITE003",
-      band: "M",
-      x: 5,
-      y: 12,
-      azimuth: 270,
-      tilt: 15,
-      frequency: 3500,
-      antenna_rows: 3,
-      antenna_cols: 3,
-      antenna_pattern: "Sector",
-    },
-    {
-      id: 4,
-      cell_name: "CELL004",
-      site_name: "SITE004",
-      band: "H",
-      x: 10,
-      y: 20,
-      azimuth: 90,
-      tilt: 5,
-      frequency: 2600,
-      antenna_rows: 2,
-      antenna_cols: 2,
-      antenna_pattern: "Omni",
-    },
-    {
-      id: 5,
-      cell_name: "CELL005",
-      site_name: "SITE005",
-      band: "H",
-      x: 10,
-      y: 20,
-      azimuth: 90,
-      tilt: 5,
-      frequency: 2600,
-      antenna_rows: 2,
-      antenna_cols: 2,
-      antenna_pattern: "Omni",
-    },
-    {
-      id: 6,
-      cell_name: "CELL006",
-      site_name: "SITE006",
-      band: "H",
-      x: 10,
-      y: 20,
-      azimuth: 90,
-      tilt: 5,
-      frequency: 2600,
-      antenna_rows: 2,
-      antenna_cols: 2,
-      antenna_pattern: "Omni",
-    },
-  ];
-
+  
+  // Load cells on mount
   useEffect(() => {
-    setCells(mockCells);
-  }, []);
+    loadCells();
+  }, [loadCells]);
 
   return (
     <div className="h-full w-full flex overflow-hidden">
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+          }
+          50% {
+            filter: drop-shadow(0 0 16px rgba(255, 215, 0, 1));
+          }
+        }
+      `}</style>
       <div className="flex-1 relative" ref={containerRef}>
         <canvas
           ref={canvasRef}
@@ -628,7 +578,6 @@ export default function NetworkMap() {
             backgroundColor: "#ffffff",
             cursor: isDragging ? "grabbing" : "grab",
           }}
-          onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -768,12 +717,13 @@ export default function NetworkMap() {
                 >
                   {filteredCells.map((cell) => (
                     <div
-                      key={cell.id}
+                      key={cell.cell_idx || cell.cell_name}
                       className="px-4 py-2 hover:bg-accent/10 cursor-pointer border-b transition-all"
                       style={{ borderColor: "var(--color-line)" }}
                       onClick={() => {
                         setSelectedCell(cell);
                         setSearchText("");
+                        panToCell(cell);
                       }}
                     >
                       <div className="font-semibold text-gray-900">
